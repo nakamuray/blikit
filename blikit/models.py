@@ -14,6 +14,21 @@ class BaseObject(object):
         self.parent = None
         self.name = None
 
+    @property
+    def abs_name(self):
+        abs_name = self.name
+        parent = self.parent
+
+        while parent is not None:
+            abs_name = parent.name + '/' + abs_name
+            parent = parent.parent
+
+        return '/' + abs_name
+
+    @property
+    def last_modified(self):
+        raise NotImplementedError
+
 
 class BlobObject(BaseObject):
     @property

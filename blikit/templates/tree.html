@@ -19,13 +19,13 @@
                 <tr>
                     {%- if obj.is_tree %}
                     <td>&nbsp;</td> <!-- TODO: display file type icons -->
-                    <td>{{ name + '/' }}</td>
+                    <td><a href="{{ escape_u(name + '/') }}">{{ name + '/' | escape }}</a></td>
                     <td>&nbsp;</td> <!-- TODO: last modified -->
                     <td>&nbsp;</td> {#- directory has no size #}
                     <td>&nbsp;</td> <!-- TODO: description -->
                     {%- else %}
                     <td>&nbsp;</td> <!-- TODO: display file type icons -->
-                    <td>{{ name }}</td>
+                    <td><a href="{{ escape_u(name) }}">{{ name | escape }}</a></td>
                     <td>&nbsp;</td> <!-- TODO: last modified -->
                     <td>&nbsp;</td> <!-- TODO: size -->
                     <td>&nbsp;</td> <!-- TODO: description -->
