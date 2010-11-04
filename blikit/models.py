@@ -28,12 +28,17 @@ class LinkObject(BlobObject):
 
 
 class TreeObject(BaseObject):
+    is_tree = True
+
     def iteritems(self):
         for name, _, _ in self._obj.iteritems():
             yield (name, self[name])
 
     def __iter__(self):
-        return self._obj.keys()
+        return iter(self._obj)
+
+    def __contains__(self, name):
+        return name in self._obj
 
     def __getitem__(self, name):
         if '/' in name:

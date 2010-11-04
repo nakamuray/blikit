@@ -10,7 +10,7 @@ def map_to(rule, **kwargs):
 
     return decorate
 
-def bind_to_envidon(*args, **kwargs):
+def bind_to_environ(*args, **kwargs):
     return _url_map.bind_to_environ(*args, **kwargs)
 
 def url_for(url_adapter, endpoint, _external=False, **values):

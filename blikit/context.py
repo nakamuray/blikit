@@ -21,7 +21,7 @@ class Context(object):
     jinja_env
       jinja2.Environment object
     '''
-    __slots__ = ['request', 'odb', 'url_adapter']
+    __slots__ = ['request', 'odb', 'url_adapter', 'jinja_env']
 
     def __init__(self, environ, odb, jinja_env):
         self.request = Request(environ)
@@ -39,5 +39,12 @@ class Context(object):
 
         return werkzeug.Response object
         '''
-        html = self.jinja_env.get_template(template).render(**template_context)
+        context = {
+            'url_for': self.url_for,
+            'request': self.request,
+        }
+
+        context.update(template_context)
+
+        html = self.jinja_env.get_template(template).render(**context)
         return Response(html, mimetype='text/html')

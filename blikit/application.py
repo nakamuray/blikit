@@ -1,5 +1,8 @@
 # vim: fileencoding=utf-8
+import os
 import time
+
+from jinja2 import Environment, FileSystemLoader
 
 from werkzeug import Request, ClosingIterator, peek_path_info, pop_path_info
 from werkzeug.exceptions import HTTPException, NotFound
@@ -7,14 +10,29 @@ from werkzeug.exceptions import HTTPException, NotFound
 from blikit import models, views
 from blikit.context import Context
 
+DEFAULT_TEMPLATE_PATH = os.path.join(os.path.dirname(__file__), 'templates')
+
 class Blikit(object):
     def __init__(self, repo_path):
+        self._repo_path = repo_path
         self._odb = models.ObjectDatabase(repo_path)
+        self._init_jinja_env()
+
+    def _init_jinja_env(self):
+        template_path_list = [DEFAULT_TEMPLATE_PATH]
+
+        repo_template_path = os.path.join(self._repo_path, 'templates')
+        if os.path.isdir(repo_template_path):
+            template_path_list.append(repo_template_path)
+
+        jinja_env = Environment(loader=FileSystemLoader(template_path_list))
+        self._jinja_env = jinja_env
+
 
     def __call__(self, environ, start_response):
-        context = Context(environ, self.odb, self.jinja_env)
+        context = Context(environ, self._odb, self._jinja_env)
         try:
-            endpoint, values = context.url_adopter.match()
+            endpoint, values = context.url_adapter.match()
             handler = getattr(views, endpoint)
             response = handler(context, **values)
         except HTTPException, e:

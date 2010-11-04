@@ -2,12 +2,20 @@
 
 import os
 
+from werkzeug import redirect
 from werkzeug.exceptions import NotFound
 
-from blikit import urlmap, config
-from blikit.utils import to_html, render_template
+from blikit import urlmap
+from blikit.models import BlobObject, LinkObject, TreeObject
+from blikit.render import render_blob
 
 # XXX: イメージです
+
+READMES = [
+    'README',
+    'README.txt',
+    'README.rst',
+]
 
 @urlmap.map_to('/<rev>/', defaults={'path': '/'})
 @urlmap.map_to('/<rev>/<path:path>/')
@@ -17,7 +25,6 @@ def tree(ctx, rev, path):
     else:
         commit_obj = ctx.odb.get_tree(rev)
 
-    # TODO: catch file not found error and return 404
     try:
         tree_obj = commit_obj.tree[path]
 
@@ -28,20 +35,19 @@ def tree(ctx, rev, path):
         # TODO: follow symlink
         raise NotFound('No such file or directory')
 
-    for readme_name in config.readmes:
+    for readme_name in READMES:
         if readme_name in tree_obj:
             obj = tree_obj[readme_name]
             # TODO: follow symlink
             if isinstance(obj, BlobObject):
-                _, ext = os.path.splitext(readme_name)
                 readme = render_blob(obj)
                 break
 
     else:
         readme = None
 
-    return render_template('tree.html',
-                           tree=tree_obj, readme=readme, context=ctx)
+    return ctx.render_template('tree.html',
+                               tree=tree_obj, readme=readme, context=ctx)
 
 @urlmap.map_to('/<rev>/<path:path>')
 def blob(ctx, rev, path):
@@ -51,9 +57,28 @@ def blob(ctx, rev, path):
         commit_obj = ctx.odb.get_tree(rev)
 
     blob_obj = commit_obj.tree.get_path(path)
-    # TODO: follow symlink
 
-    _, ext = os.path.splitext(path)
-    doc = render_blob(blob_obj)
+    if isinstance(blob_obj, TreeObject):
+        # redirect to same URL with trailing "/"
+        return redirect(ctx.url_for('tree', rev=rev, path=path))
+    else:
+        # TODO: follow symlink
+        raise NotFound('No such file or directory')
 
-    return render_template('blob.html', doc=doc, context=ctx)
+    if 'raw' in ctx.request.args:
+        content_type, encoding = mimetypes.guess_type(blob_obj.name)
+
+        if content_type is None:
+            if '\x00' in blob_obj.data:
+                content_type = 'application/octat-stream'
+            else:
+                content_type = 'text/plain'
+
+        # TODO: use encoding
+        responce = Response(blob_obj.data,
+                            content_type=content_type)
+    else:
+        doc = render_blob(blob_obj)
+        responce = ctx.render_template('blob.html', doc=doc, context=ctx)
+
+    return responce

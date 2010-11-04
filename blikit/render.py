@@ -6,17 +6,31 @@ from docutils import nodes
 from docutils.core import publish_parts
 from docutils.parsers.rst import Directive, directives
 
+class Document(object):
+    title = None
+    body = None
+    def __init__(self, **attrs):
+        for name, value in attrs:
+            if name.startswith('_'):
+                continue
+            setattr(self, name, value)
 
-renderer_map = {
-    '.txt': render_text,
-    '.rst': render_rst,
-}
+
+renderer_map = dict()
+
+def register_for(*exts):
+    def _register_for(func):
+        for e in exts:
+            renderer_map[e] = func
+        return func
+
+    return _register_for
 
 
-def render(ctx, blob_obj):
+def render_blob(ctx, blob_obj):
     u'''render BlobObject as HTML portion using proper render function
 
-    return (title, html)
+    return <Document object>
 
     if there is no render function for this object, return None
     '''
@@ -34,13 +48,17 @@ def render(ctx, blob_obj):
     return result
 
 
+@register_for('.txt')
 def render_text(blob_obj):
-    return (blob_obj.name, '<pre>' + werkzeug.escape(blob_obj.data) + '</pre>')
+    return Document(title=blob_obj.name,
+                    boty='<pre>' + werkzeug.escape(blob_obj.data) + '</pre>')
 
 
+@register_for('.rst')
 def render_rst(blob_obj):
     parts = publish_parts(blob_obj.data, writer_name='html',
                           settings_overrides={'tree': tree})
+    return Document(**parts)
 
 
 class IncludeTree(Directive):
