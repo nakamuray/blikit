@@ -60,8 +60,9 @@ def render_blob(ctx, blob_obj):
 
 @register_for('*.txt')
 def render_text(ctx, blob_obj):
+    udata = blob_obj.data.decode('utf-8', 'replace')
     return Document(title=blob_obj.name,
-                    body='<pre>' + werkzeug.escape(blob_obj.data) + '</pre>')
+                    body=u'<pre>' + werkzeug.escape(udata) + u'</pre>')
 
 
 @register_for('*.rst')
