@@ -30,11 +30,22 @@ class BaseObject(object):
     def last_modified(self):
         raise NotImplementedError
 
+    def __cmp__(self, other):
+        return self.sha == other.sha
+
 
 class BlobObject(BaseObject):
+    _size = None
+
     @property
     def data(self):
         return self._obj.data
+
+    @property
+    def size(self):
+        if self._size is None:
+            self._size = len(self.data)
+        return self._size
 
 
 class LinkObject(BlobObject):
