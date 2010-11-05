@@ -1,5 +1,6 @@
 # vim: fileencoding=utf-8
 
+import fnmatch
 import os
 import werkzeug
 
@@ -9,7 +10,7 @@ from docutils.parsers.rst import Directive, directives
 
 from pygments import highlight
 from pygments.formatters import HtmlFormatter
-from pygments.lexers import guess_lexer_for_filename, TextLexer
+from pygments.lexers import LEXERS, guess_lexer_for_filename, TextLexer
 
 from blikit.models import BlobObject
 
@@ -23,12 +24,12 @@ class Document(object):
             setattr(self, name, value)
 
 
-renderer_map = dict()
+renderer_map = []
 
-def register_for(*exts):
+def register_for(*pats):
     def _register_for(func):
-        for e in exts:
-            renderer_map[e] = func
+        for p in pats:
+            renderer_map.append((p, func))
         return func
 
     return _register_for
@@ -46,42 +47,23 @@ def render_blob(ctx, blob_obj):
         # XXX: may this function treat TreeObject?
         raise Exception
 
-    _, ext = os.path.splitext(blob_obj.name)
-    if ext in renderer_map:
-        result = renderer_map[ext](blob_obj)
+    for p, func in renderer_map:
+        if fnmatch.fnmatch(blob_obj.name, p):
+            result = func(blob_obj)
+            break
     else:
         result = None
 
     return result
 
 
-@register_for('.txt')
+@register_for('*.txt')
 def render_text(blob_obj):
     return Document(title=blob_obj.name,
                     boty='<pre>' + werkzeug.escape(blob_obj.data) + '</pre>')
 
 
-formatter = HtmlFormatter(noclasses=True, linenos=True)
-
-@register_for('.py', '.hs')
-def render_sourcecode(blob_obj):
-    try:
-        data = blob_obj.data.decode('utf-8')
-
-    except UnicodeDecodeError:
-        data = blob_obj.data
-
-    try:
-        lexer = guess_lexer_for_filename(blob_obj.name, data)
-    except ValueError:
-        # no lexer found - use the text one instead of an exception
-        lexer = TextLexer()
-
-    return Document(title=blob_obj.name,
-                    body=highlight(data, lexer, formatter))
-
-
-@register_for('.rst')
+@register_for('*.rst')
 def render_rst(blob_obj):
     parts = publish_parts(blob_obj.data, writer_name='html',
                           settings_overrides={'tree': tree})
@@ -112,3 +94,23 @@ class IncludeTree(Directive):
             yield nodes.raw('', str(blob), format='html')
 
 directives.register_directive('include-tree', IncludeTree)
+
+
+formatter = HtmlFormatter(noclasses=True, linenos=True)
+
+@register_for(*[p for l in LEXERS.values() for p in l[3]])
+def render_sourcecode(blob_obj):
+    try:
+        data = blob_obj.data.decode('utf-8')
+
+    except UnicodeDecodeError:
+        data = blob_obj.data
+
+    try:
+        lexer = guess_lexer_for_filename(blob_obj.name, data)
+    except ValueError:
+        # no lexer found - use the text one instead of an exception
+        lexer = TextLexer()
+
+    return Document(title=blob_obj.name,
+                    body=highlight(data, lexer, formatter))
