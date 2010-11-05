@@ -20,11 +20,20 @@ READMES = [
 @urlmap.map_to('/<rev>/', defaults={'path': '/'})
 @urlmap.map_to('/<rev>/<path:path>')
 def view(ctx, rev, path):
+    # XXX: Rule('/<rev>/<path:path>/') が末尾の "/" が無くてもマッチする上に
+    #      勝手に "/" 付きの URL にリダイレクトを試みてくれるので、
+    #      blob view の方に行き着けない。
+    #      かといって Rule('/<rev>/<path:path>') を前に持ってくると "/" で終わる
+    #      URL にも普通にマッチしてしまうので、今度は tree view の方に行けない。
+    #
+    #      ということで仕方なくここで判定・ルーティングする。
     if path.endswith('/'):
         return tree(ctx, rev, path)
     else:
         return blob(ctx, rev, path)
 
+#@urlmap.map_to('/<rev>/', defaults={'path': '/'})
+#@urlmap.map_to('/<rev>/<path:path>')
 def tree(ctx, rev, path):
     if rev == 'HEAD':
         commit_obj = ctx.odb.head
