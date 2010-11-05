@@ -1,5 +1,6 @@
 import dulwich
 import fnmatch
+import os
 import stat
 
 
@@ -16,14 +17,14 @@ class BaseObject(object):
 
     @property
     def abs_name(self):
-        abs_name = self.name
+        paths = [self.name]
         parent = self.parent
 
         while parent is not None:
-            abs_name = parent.name + '/' + abs_name
+            paths.insert(0, parent.name)
             parent = parent.parent
 
-        return '/' + abs_name
+        return os.path.join(*paths)
 
     @property
     def last_modified(self):
