@@ -1,21 +1,24 @@
 # vim: fileencoding=utf-8
 
+import mimetypes
 import os
 
-from werkzeug import redirect
+from werkzeug import Response, redirect
 from werkzeug.exceptions import NotFound
 
 from blikit import urlmap
 from blikit.models import BlobObject, LinkObject, TreeObject
 from blikit.render import render_blob
 
-# XXX: イメージです
-
 READMES = [
     'README',
     'README.txt',
     'README.rst',
 ]
+
+@urlmap.map_to('/')
+def root(ctx):
+    return redirect(ctx.url_for('view', rev='HEAD'))
 
 @urlmap.map_to('/<rev>/', defaults={'path': '/'})
 @urlmap.map_to('/<rev>/<path:path>')
