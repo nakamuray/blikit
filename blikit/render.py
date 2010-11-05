@@ -12,6 +12,7 @@ from pygments import highlight
 from pygments.formatters import HtmlFormatter
 from pygments.lexers import LEXERS, guess_lexer_for_filename, TextLexer
 
+from blikit import utils
 from blikit.models import BlobObject
 
 class Document(object):
@@ -49,7 +50,7 @@ def render_blob(ctx, blob_obj):
 
     for p, func in renderer_map:
         if fnmatch.fnmatch(blob_obj.name, p):
-            result = func(blob_obj)
+            result = func(ctx, blob_obj)
             break
     else:
         result = None
@@ -58,13 +59,13 @@ def render_blob(ctx, blob_obj):
 
 
 @register_for('*.txt')
-def render_text(blob_obj):
+def render_text(ctx, blob_obj):
     return Document(title=blob_obj.name,
-                    boty='<pre>' + werkzeug.escape(blob_obj.data) + '</pre>')
+                    body='<pre>' + werkzeug.escape(blob_obj.data) + '</pre>')
 
 
 @register_for('*.rst')
-def render_rst(blob_obj):
+def render_rst(ctx, blob_obj):
     parts = publish_parts(blob_obj.data, writer_name='html',
                           settings_overrides={'tree': tree})
     return Document(**parts)
@@ -96,10 +97,19 @@ class IncludeTree(Directive):
 directives.register_directive('include-tree', IncludeTree)
 
 
+@register_for('*.png', '*.jpg', '*.jpeg', '*.gif')
+def render_images(ctx, blob_obj):
+    w, h = utils.calc_thumb_size(blob_obj.data, (640, 480))
+    raw_url = werkzeug.escape(blob_obj.name) + '?raw=1'
+    body = '<a href="%s"><img src="%s" width="%d" height="%s"></a>' % \
+               (raw_url, raw_url, w, h)
+    return Document(title=blob_obj.name, body=body)
+
+
 formatter = HtmlFormatter(noclasses=True, linenos=True)
 
 @register_for(*[p for l in LEXERS.values() for p in l[3]])
-def render_sourcecode(blob_obj):
+def render_sourcecode(ctx, blob_obj):
     try:
         data = blob_obj.data.decode('utf-8')
 
@@ -114,3 +124,18 @@ def render_sourcecode(blob_obj):
 
     return Document(title=blob_obj.name,
                     body=highlight(data, lexer, formatter))
+
+
+@register_for('*')
+def render_default(ctx, blob_obj):
+    if '\x00' in blob_obj.data:
+        # maybe binary file
+        # display download link
+        escaped = werkzeug.escape(blob_obj.name)
+        body = '<a href="%s?raw=1">download "%s"</a>' % (escaped, escaped)
+        return Document(title=blob_obj.name, body=body)
+
+    else:
+        # maybe some text file
+        # render like *.txt
+        return render_text(ctx, blob_obj)
