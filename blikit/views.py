@@ -18,7 +18,13 @@ READMES = [
 ]
 
 @urlmap.map_to('/<rev>/', defaults={'path': '/'})
-@urlmap.map_to('/<rev>/<path:path>/')
+@urlmap.map_to('/<rev>/<path:path>')
+def view(ctx, rev, path):
+    if path.endswith('/'):
+        return tree(ctx, rev, path)
+    else:
+        return blob(ctx, rev, path)
+
 def tree(ctx, rev, path):
     if rev == 'HEAD':
         commit_obj = ctx.odb.head
@@ -49,19 +55,19 @@ def tree(ctx, rev, path):
     return ctx.render_template('tree.html',
                                tree=tree_obj, readme=readme, context=ctx)
 
-@urlmap.map_to('/<rev>/<path:path>')
+#@urlmap.map_to('/<rev>/<path:path>')
 def blob(ctx, rev, path):
     if rev == 'HEAD':
         commit_obj = ctx.odb.head
     else:
         commit_obj = ctx.odb.get_tree(rev)
 
-    blob_obj = commit_obj.tree.get_path(path)
+    blob_obj = commit_obj.tree[path]
 
     if isinstance(blob_obj, TreeObject):
         # redirect to same URL with trailing "/"
         return redirect(ctx.url_for('tree', rev=rev, path=path))
-    else:
+    elif isinstance(blob_obj, LinkObject):
         # TODO: follow symlink
         raise NotFound('No such file or directory')
 
@@ -78,7 +84,7 @@ def blob(ctx, rev, path):
         responce = Response(blob_obj.data,
                             content_type=content_type)
     else:
-        doc = render_blob(blob_obj)
+        doc = render_blob(ctx, blob_obj)
         responce = ctx.render_template('blob.html', doc=doc, context=ctx)
 
     return responce

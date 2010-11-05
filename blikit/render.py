@@ -1,16 +1,23 @@
 # vim: fileencoding=utf-8
 
+import os
 import werkzeug
 
 from docutils import nodes
 from docutils.core import publish_parts
 from docutils.parsers.rst import Directive, directives
 
+from pygments import highlight
+from pygments.formatters import HtmlFormatter
+from pygments.lexers import guess_lexer_for_filename, TextLexer
+
+from blikit.models import BlobObject
+
 class Document(object):
     title = None
     body = None
     def __init__(self, **attrs):
-        for name, value in attrs:
+        for name, value in attrs.iteritems():
             if name.startswith('_'):
                 continue
             setattr(self, name, value)
@@ -52,6 +59,26 @@ def render_blob(ctx, blob_obj):
 def render_text(blob_obj):
     return Document(title=blob_obj.name,
                     boty='<pre>' + werkzeug.escape(blob_obj.data) + '</pre>')
+
+
+formatter = HtmlFormatter(noclasses=True, linenos=True)
+
+@register_for('.py', '.hs')
+def render_sourcecode(blob_obj):
+    try:
+        data = blob_obj.data.decode('utf-8')
+
+    except UnicodeDecodeError:
+        data = blob_obj.data
+
+    try:
+        lexer = guess_lexer_for_filename(blob_obj.name, data)
+    except ValueError:
+        # no lexer found - use the text one instead of an exception
+        lexer = TextLexer()
+
+    return Document(title=blob_obj.name,
+                    body=highlight(data, lexer, formatter))
 
 
 @register_for('.rst')

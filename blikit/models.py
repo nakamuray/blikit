@@ -76,11 +76,10 @@ class TreeObject(BaseObject):
         return obj
 
     def _get_path(self, path):
-        if path == '/':
-            return self
+        path = path.strip('/')
 
-        if path.startswith('/'):
-            path = path[1:]
+        if path == '':
+            return self
 
         if '/' in path:
             dirname, subpath = path.split('/', 1)
