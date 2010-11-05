@@ -38,7 +38,7 @@ def tree(ctx, rev, path):
     if rev == 'HEAD':
         commit_obj = ctx.odb.head
     else:
-        commit_obj = ctx.odb.get_tree(rev)
+        commit_obj = ctx.odb.get_commit(rev)
 
     try:
         tree_obj = commit_obj.tree[path]
@@ -69,7 +69,7 @@ def blob(ctx, rev, path):
     if rev == 'HEAD':
         commit_obj = ctx.odb.head
     else:
-        commit_obj = ctx.odb.get_tree(rev)
+        commit_obj = ctx.odb.get_commit(rev)
 
     blob_obj = commit_obj.tree[path]
 
