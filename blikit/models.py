@@ -1,3 +1,4 @@
+import datetime
 import dulwich
 import fnmatch
 import os
@@ -30,7 +31,25 @@ class BaseObject(object):
 
     @property
     def last_modified(self):
-        raise NotImplementedError
+        visited = set()
+        pendings = [self.commit_obj]
+        abs_name = self.abs_name
+        while pendings:
+            commit = pendings.pop(0)
+            for parent_commit in commit.parents:
+                try:
+                    obj_sha = parent_commit.tree[abs_name].sha
+                except KeyError:
+                    obj_sha = None
+
+                if self.sha == obj_sha:
+                    pendings.append(parent_commit)
+                    break
+            else:
+                return commit.commit_time
+
+        # maybe initial commit
+        return commit.commit_time
 
     @property
     def commit_obj(self):
@@ -47,7 +66,7 @@ class BaseObject(object):
         else:
             raise ObjectTypeMismatch
 
-    def __cmp__(self, other):
+    def __compare__(self, other):
         if hasattr(other, 'sha'):
             return self.sha == other.sha
         else:
@@ -168,12 +187,27 @@ class CommitObject(BaseObject):
         # copy list
         return list(self._parents)
 
+    @property
+    def commit_time(self):
+        return datetime.datetime.fromtimestamp(self._obj.commit_time, _TO(self._obj.commit_timezone))
+
     def diff(self, other):
         if not isinstance(other, CommitObject):
             raise ObjectTypeMismatch('%s object expected, not %s' %
                                      (self.__class__.__name__, repr(other)))
 
         return self.tree.diff(other.tree)
+
+class _TO(datetime.tzinfo):
+    zero = datetime.timedelta(0)
+    def __init__(self, sec_offset):
+        self._offset = datetime.timedelta(seconds=sec_offset)
+    def utcoffset(self, dt):
+        return self._offset
+    def tzname(self, dt):
+        return None
+    def dst(self, dt):
+        return self.zero
 
 
 class ObjectTypeMismatch(Exception):
