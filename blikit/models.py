@@ -43,9 +43,13 @@ class BaseObject(object):
                     obj_sha = None
 
                 if self.sha == obj_sha:
+                    # if this commit's file has same sha,
+                    # the file was altered somewhere in this branch (correct?)
                     pendings.append(parent_commit)
                     break
             else:
+                # all parents has different sha,
+                # so this file was altered by this commit
                 return commit.commit_time
 
         # maybe initial commit
