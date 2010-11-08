@@ -18,11 +18,11 @@ READMES = [
 
 @urlmap.map_to('/')
 def root(ctx):
-    return redirect(ctx.url_for('view', rev='HEAD'))
+    return redirect(ctx.url_for('view_obj', rev='HEAD'))
 
 @urlmap.map_to('/<rev>/', defaults={'path': '/'})
 @urlmap.map_to('/<rev>/<path:path>')
-def view(ctx, rev, path):
+def view_obj(ctx, rev, path):
     # XXX: Rule('/<rev>/<path:path>/') が末尾の "/" が無くてもマッチする上に
     #      勝手に "/" 付きの URL にリダイレクトを試みてくれるので、
     #      blob view の方に行き着けない。
@@ -74,7 +74,11 @@ def blob(ctx, rev, path):
     else:
         commit_obj = ctx.odb.get_commit(rev)
 
-    blob_obj = commit_obj.tree[path]
+    try:
+        blob_obj = commit_obj.tree[path]
+
+    except KeyError:
+        raise NotFound('No such file or directory')
 
     if isinstance(blob_obj, TreeObject):
         # redirect to same URL with trailing "/"

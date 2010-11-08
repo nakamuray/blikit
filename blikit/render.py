@@ -14,6 +14,7 @@ from pygments.lexers import LEXERS, guess_lexer_for_filename, TextLexer
 
 from blikit import utils
 from blikit.models import BlobObject
+from blikit.docutilsext import Writer
 
 class Document(object):
     title = None
@@ -67,35 +68,9 @@ def render_text(ctx, blob_obj):
 
 @register_for('*.rst')
 def render_rst(ctx, blob_obj):
-    parts = publish_parts(blob_obj.data, writer_name='html',
-                          settings_overrides={'tree': tree})
+    parts = publish_parts(blob_obj.data, writer=Writer(),
+                          settings_overrides={'ctx': ctx, 'obj': blob_obj})
     return Document(**parts)
-
-
-class IncludeTree(Directive):
-    has_content = False
-    required_arguments = 1
-    optional_arguments = 0
-    final_argument_whitespace = True
-    option_spec = {
-        'recursive': directives.flag,
-        'name': directives.unchanged,
-        'reverse': directives.flag,
-        'limit': directives.positive_int,
-    }
-
-    def run(self):
-        tree = self.state.document.settings.tree
-        path = self.arguments[0]
-        limit = self.options.get('limit', None)
-        for i, blob in enumerate(tree.find()):
-            if limit is not None and i > limit:
-                break
-
-            # TODO: convert to HTML
-            yield nodes.raw('', str(blob), format='html')
-
-directives.register_directive('include-tree', IncludeTree)
 
 
 @register_for('*.png', '*.jpg', '*.jpeg', '*.gif')

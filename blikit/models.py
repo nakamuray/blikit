@@ -16,7 +16,7 @@ class BaseObject(object):
         self.name = None
 
         # will be setted through set_commit
-        self._commit_obj_sha = None
+        self._commit_sha = None
 
     @property
     def abs_name(self):
@@ -32,7 +32,7 @@ class BaseObject(object):
     @property
     def last_modified(self):
         visited = set()
-        pendings = [self.commit_obj]
+        pendings = [self.commit]
         abs_name = self.abs_name
         while pendings:
             commit = pendings.pop(0)
@@ -56,21 +56,21 @@ class BaseObject(object):
         return commit.commit_time
 
     @property
-    def commit_obj(self):
-        return self._odb.get_commit(self._commit_obj_sha)
+    def commit(self):
+        return self._odb.get_commit(self._commit_sha)
 
     def set_commit(self, commit_obj):
         if isinstance(commit_obj, CommitObject):
             # record hash to avoid circular reference
-            self._commit_obj_sha = commit_obj.sha
+            self._commit_sha = commit_obj.sha
 
         elif isinstance(commit_obj, basestring):
-            self._commit_obj_sha = commit_obj
+            self._commit_sha = commit_obj
 
         else:
             raise ObjectTypeMismatch
 
-    def __compare__(self, other):
+    def __eq__(self, other):
         if hasattr(other, 'sha'):
             return self.sha == other.sha
         else:
@@ -108,7 +108,14 @@ class TreeObject(BaseObject):
         return iter(self._obj)
 
     def __contains__(self, name):
-        return name in self._obj
+        if '/' in name:
+            try:
+                self[name]
+                return True
+            except KeyError:
+                return False
+        else:
+            return name in self._obj
 
     def __getitem__(self, name):
         if '/' in name:
@@ -127,7 +134,7 @@ class TreeObject(BaseObject):
 
         obj.parent = self
         obj.name = name
-        obj.set_commit(self._commit_obj_sha)
+        obj.set_commit(self._commit_sha)
 
         return obj
 
