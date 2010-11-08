@@ -8,12 +8,14 @@ class BaseObject(object):
     def __init__(self, odb, obj):
         self._odb = odb
         self._obj = obj
-        self.sha = obj.sha()
-        self.str_sha = self.sha.hexdigest()
+        self.sha = obj.sha().hexdigest()
 
         # will be setted by TreeObject or CommitObject
         self.parent = None
         self.name = None
+
+        # will be setted through set_commit
+        self._commit_obj_sha = None
 
     @property
     def abs_name(self):
@@ -30,8 +32,26 @@ class BaseObject(object):
     def last_modified(self):
         raise NotImplementedError
 
+    @property
+    def commit_obj(self):
+        return self._odb.get_commit(self._commit_obj_sha)
+
+    def set_commit(self, commit_obj):
+        if isinstance(commit_obj, CommitObject):
+            # record hash to avoid circular reference
+            self._commit_obj_sha = commit_obj.sha
+
+        elif isinstance(commit_obj, basestring):
+            self._commit_obj_sha = commit_obj
+
+        else:
+            raise ObjectTypeMismatch
+
     def __cmp__(self, other):
-        return self.sha == other.sha
+        if hasattr(other, 'sha'):
+            return self.sha == other.sha
+        else:
+            return False
 
 
 class BlobObject(BaseObject):
@@ -84,6 +104,7 @@ class TreeObject(BaseObject):
 
         obj.parent = self
         obj.name = name
+        obj.set_commit(self._commit_obj_sha)
 
         return obj
 
@@ -134,6 +155,7 @@ class CommitObject(BaseObject):
         if self._tree is None:
             self._tree = self._odb.get_tree(self._obj.tree)
             self._tree.name = '/'
+            self._tree.set_commit(self)
 
         return self._tree
 
@@ -195,14 +217,14 @@ class ObjectDatabase(object):
     @property
     def histories(self):
         commit = self.head
-        known_hashes = set(commit.str_sha)
+        known_hashes = set(commit.sha)
         pending = [commit]
         while pending:
             commit = pending.pop(0)
-            if commit.str_sha in known_hashes:
+            if commit.sha in known_hashes:
                 continue
 
-            known_hashes.add(commit.str_sha)
+            known_hashes.add(commit.sha)
 
             yield commit
 
