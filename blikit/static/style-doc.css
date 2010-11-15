@@ -55,7 +55,8 @@ div.hint,
 div.important,
 div.note,
 div.tip,
-div.warning {
+div.warning,
+div.system-message {
     border: 1px solid #cccccc;
     margin: 2em;
     padding: 1em;
@@ -63,7 +64,7 @@ div.warning {
 }
 div.attention p.admonition-title, div.caution p.admonition-title,
 div.danger p.admonition-title, div.error p.admonition-title,
-div.warning p.admonition-title {
+div.warning p.admonition-title, div.system-message p.system-message-title {
   color: red ;
   font-weight: bold ;
 }
