@@ -1,9 +1,11 @@
 import re
 
 from docutils import nodes
+from docutils.parsers.rst import Directive, directives
 from docutils.writers import html4css1
 
 from blikit.models import TreeObject
+import blikit.render
 
 
 class Writer(html4css1.Writer):
@@ -54,3 +56,63 @@ class HTMLTranslator(html4css1.HTMLTranslator):
                         pass
 
         return html4css1.HTMLTranslator.visit_reference(self, node)
+
+
+class ShowContents(Directive):
+    has_content = False
+    required_arguments = 0
+    optional_arguments = 1
+    final_argument_whitespace = True
+    option_spec = {
+        'recursive': directives.flag,
+        'name': directives.unchanged,
+        'order_by': lambda x: directives.choice(x, ('name', 'last_modified')),
+        'reverse': directives.flag,
+        'count': directives.positive_int,
+        'pattern': directives.unchanged,
+    }
+
+    def run(self):
+        ctx = self.state.document.settings.ctx
+
+        obj = self.state.document.settings.obj
+        if isinstance(obj, TreeObject):
+            tree = obj
+        else:
+            tree = obj.parent
+
+        if self.arguments:
+            path = self.arguments[0]
+
+            # FIXME: KeyError
+            if path.startswith('/'):
+                tree = obj.commit.tree[path]
+
+            else:
+                tree = tree[path]
+
+        # TODO: look "order_by" option and cmpare with last_modified
+        key_func = lambda x: x.name
+        rev = self.options.get('reverse', False)
+
+        max_count = self.options.get('count', None)
+        count = 0
+        result = []
+        for root, dirs, files in tree.walk():
+            files.sort(key=key_func, reverse=rev)
+            for f in files:
+                # TODO: filter by pattern
+                count += 1
+                doc = blikit.render.render_blob(ctx, f)
+                # TODO: use template
+                html = '<h1>%s</h1>%s' % (doc.title, doc.body)
+                result.append(nodes.raw('', html, format='html'))
+
+                if max_count is not None and count >= max_count:
+                    break
+
+            dirs.sort(key=key_func, reverse=rev)
+
+        return result
+
+directives.register_directive('show-contents', ShowContents)
