@@ -1,0 +1,123 @@
+.document {
+    font-size: 90%;
+}
+
+.document pre {
+    width: auto;
+    overflow: auto;
+    letter-spacing: 1px;
+    color: #3d4263;
+    background-color: #f5f5f5;
+    border: 1px solid #cccccc;
+    padding: 8px 16px;
+}
+
+.document h1,
+.document h2,
+.document h3,
+.document h4,
+.document h5,
+.document h6
+{
+    font-size: 110%;
+}
+
+.document h1 {
+    border-left: 5px solid #999999;
+    border-bottom: 1px solid #999999;
+    padding-left: 5px;
+}
+
+.document h2 {
+    border-bottom: 1px solid #999999;
+}
+
+.document h1 a, h2 a {
+    color: black !important;
+    border-bottom: none;
+}
+
+
+tt.docutils {
+    letter-spacing: 1px;
+    color: #3d4263;
+    background-color: #f5f5f5;
+    border: 1px solid #cccccc;
+    padding: 1px 3px;
+}
+
+div.admonition,
+div.attention,
+div.caution,
+div.danger,
+div.error,
+div.hint,
+div.important,
+div.note,
+div.tip,
+div.warning {
+    border: 1px solid #cccccc;
+    margin: 2em;
+    padding: 1em;
+    font-size: 80%;
+}
+div.attention p.admonition-title, div.caution p.admonition-title,
+div.danger p.admonition-title, div.error p.admonition-title,
+div.warning p.admonition-title {
+  color: red ;
+  font-weight: bold ;
+}
+
+table.field-list {
+  width: 80% !important;
+  background-color: #fafafa;
+  border-collapse: separate !important;
+  border-right: none !important;
+  border-left: none !important;
+  border-top: solid #aaaaaa !important;
+  border-bottom: solid #aaaaaa !important;
+}
+
+th.field-name {
+  font-size: 80%;
+  background-color: #eeeeee;
+  width: 40%;
+  padding: 1% 5% 1% 5%;
+}
+
+td.field-body {
+  font-size: 80%;
+  text-align: center;
+  padding: 1% 5% 1% 5%;
+}
+
+table.docutils {
+  margin-top: 5px;
+  margin-bottom: 5px;
+  font-size: 80%;
+  border: 1px solid #aaaaaa;
+  border-bottom: solid #aaaaaa;
+  border-collapse: collapse;
+  width: 100%;
+  background-color: #fafafa;
+}
+
+table.docutils thead {
+  background-color: #eeeeee;
+  font-weight:      bold;
+}
+
+table.docutils th,
+table.docutils td {
+  padding: 1%;
+}
+
+ul {
+    list-style-type: square;
+}
+
+ul, ol {
+    list-style-position: outside;
+    padding-left: 1em;
+}
+

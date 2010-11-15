@@ -1,0 +1,30 @@
+a {
+    text-decoration: none;
+}
+
+a:link {
+    color: #005585;
+    border-bottom: 1px solid #005585;
+}
+
+a:visited {
+    color: #485270;
+    border-bottom: 1px solid #cccccc;
+}
+
+a:hover {
+    color: #b83800;
+}
+
+img {
+    vertical-align: bottom;
+}
+
+a img {
+    border: 2px solid #eeeeee;
+}
+
+a:hover img {
+    border: 2px solid #cccccc;
+}
+

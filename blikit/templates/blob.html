@@ -1,9 +1,14 @@
 <html>
     <head>
         <title>{{ doc.title }}</title>
+        {#- use variable something like STATIC #}
+        <link rel="stylesheet" href="/static/style.css" type="text/css">
+        <link rel="stylesheet" href="/static/style-doc.css" type="text/css">
     </head>
     <body>
-        <h1>{{ doc.title | escape }}</h1>
-        {{ doc.body }}
+        <h3>{{ doc.title | escape }}</h3>
+        <div class="document">
+            {{ doc.body }}
+        </div>
     </body>
 </html>
