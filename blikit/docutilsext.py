@@ -82,12 +82,19 @@ class ShowContents(Directive):
         if self.arguments:
             path = self.arguments[0]
 
-            # FIXME: KeyError
-            if path.startswith('/'):
-                tree = obj.commit.tree[path]
+            try:
+                if path.startswith('/'):
+                    tree = obj.commit.tree[path]
 
-            else:
-                tree = tree[path]
+                else:
+                    tree = tree[path]
+            except KeyError, e:
+                error = self.state_machine.reporter.error(
+                    'directory not found "%s"' % path,
+                    nodes.literal_block(self.block_text, self.block_text),
+                    line=self.lineno
+                )
+                return [error]
 
         order_by = self.options.get('order_by', 'name')
         if order_by == 'name':
