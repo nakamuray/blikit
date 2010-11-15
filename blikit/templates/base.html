@@ -1,0 +1,12 @@
+<html>
+    <head>
+        <title>{% block title %}{{ title }}{% endblock %}</title>
+        {#- use variable something like STATIC #}
+        <link rel="stylesheet" href="/static/style.css" type="text/css">
+        <link rel="stylesheet" href="/static/style-doc.css" type="text/css">
+        {%- block head %}{% endblock %}
+    </head>
+    <body>
+        {%- block body %}{% endblock %}
+    </body>
+</html>
