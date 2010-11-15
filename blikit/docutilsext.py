@@ -131,3 +131,5 @@ class ShowContents(Directive):
         return result
 
 directives.register_directive('show-contents', ShowContents)
+
+import pygments_rst
