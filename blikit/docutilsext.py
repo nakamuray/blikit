@@ -64,7 +64,6 @@ class ShowContents(Directive):
     final_argument_whitespace = True
     option_spec = {
         'recursive': directives.flag,
-        'name': directives.unchanged,
         'order_by': lambda x: directives.choice(x, ('name', 'last_modified')),
         'reverse': directives.flag,
         'count': directives.positive_int,
