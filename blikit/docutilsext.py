@@ -89,8 +89,13 @@ class ShowContents(Directive):
             else:
                 tree = tree[path]
 
-        # TODO: look "order_by" option and cmpare with last_modified
-        key_func = lambda x: x.name
+        order_by = self.options.get('order_by', 'name')
+        if order_by == 'name':
+            key_func = lambda x: x.name
+
+        elif order_by == 'last_modified':
+            key_func = lambda x: x.last_modified
+
         rev = self.options.get('reverse', False)
 
         max_count = self.options.get('count', None)
