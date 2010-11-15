@@ -117,8 +117,7 @@ class ShowContents(Directive):
                 # TODO: filter by pattern
                 count += 1
                 doc = blikit.render.render_blob(ctx, f)
-                # TODO: use template
-                html = '<h1>%s</h1>%s' % (doc.title, doc.body)
+                html = ctx.render_template('innerdoc.html', doc=doc, context=ctx)
                 result.append(nodes.raw('', html, format='html'))
 
                 if max_count is not None and count >= max_count:
