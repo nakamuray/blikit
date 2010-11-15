@@ -121,6 +121,16 @@ class TreeObject(BaseObject):
         if '/' in name:
             return self._get_path(name)
 
+        if name == '.':
+            return self
+
+        elif name == '..':
+            if self.parent:
+                return self.parent
+            else:
+                # / (root)
+                return self
+
         mode, hash = self._obj[name]
 
         if mode & stat.S_IFDIR:
