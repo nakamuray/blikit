@@ -1,3 +1,4 @@
+import collections
 import datetime
 import dulwich
 import fnmatch
@@ -104,6 +105,10 @@ class TreeObject(BaseObject):
         for name, _, _ in self._obj.iteritems():
             yield (name, self[name])
 
+    def itervalues(self):
+        for _, f in self.iteritems():
+            yield f
+
     def __iter__(self):
         return iter(self._obj)
 
@@ -166,6 +171,30 @@ class TreeObject(BaseObject):
 
         else:
             return self[path]
+
+    def walk(self, topdown=True):
+        roots = collections.deque([self])
+
+        while roots:
+            root = roots.popleft()
+            dirs = []
+            files = []
+
+            for f in root.itervalues():
+                if isinstance(f, BlobObject):
+                    files.append(f)
+                elif isinstance(f, TreeObject):
+                    dirs.append(f)
+                else:
+                    # TODO: what to do with LinkObject(?)
+                    pass
+
+            yield root, dirs, files
+
+            if topdown:
+                roots.extendleft(dirs)
+            else:
+                roots.extend(dirs)
 
     def find(self, name=None, type_=None, max_depth=None, reverse=False):
         if max_depth is not None:
