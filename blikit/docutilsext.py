@@ -96,6 +96,9 @@ class ShowContents(Directive):
         max_count = self.options.get('count', None)
         count = 0
         result = []
+
+        is_recursive = self.options.get('recursive', True)
+
         for root, dirs, files in tree.walk():
             files.sort(key=key_func, reverse=rev)
             for f in files:
@@ -108,6 +111,9 @@ class ShowContents(Directive):
 
                 if max_count is not None and count >= max_count:
                     break
+
+            if not is_recursive:
+                break
 
             dirs.sort(key=key_func, reverse=rev)
 
