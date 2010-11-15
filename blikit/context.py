@@ -37,7 +37,7 @@ class Context(object):
     def render_template(self, template, **template_context):
         u'''render template using current jinja context
 
-        return werkzeug.Response object
+        return str
         '''
         context = {
             'url_for': self.url_for,
@@ -52,4 +52,12 @@ class Context(object):
         context.update(template_context)
 
         html = self.jinja_env.get_template(template).render(**context)
+        return html
+
+    def render_to_response(self, template, **template_context):
+        u'''render template using current jinja context
+
+        return werkzeug.Response object
+        '''
+        html = self.render_template(template, **template_context)
         return Response(html, mimetype='text/html')
