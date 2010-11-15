@@ -25,7 +25,6 @@ class HTMLTranslator(html4css1.HTMLTranslator):
       + search in the git root directory
     '''
     def visit_reference(self, node):
-        print node
         if 'refuri' in node:
             refuri = node['refuri']
             if not re.match('^([a-z]+://|/)', refuri):
