@@ -63,7 +63,12 @@ class BaseObject(object):
 
     @property
     def commit(self):
-        return self._odb.get_commit(self._commit_sha)
+        if self._commit_sha is None:
+            # index
+            return self._odb.index
+
+        else:
+            return self._odb.get_commit(self._commit_sha)
 
     def set_commit(self, commit_obj):
         if isinstance(commit_obj, CommitObject):
@@ -72,6 +77,10 @@ class BaseObject(object):
 
         elif isinstance(commit_obj, basestring):
             self._commit_sha = commit_obj
+
+        elif commit_obj is None:
+            # maybe IndexObject's sha
+            self._commit_sha = None
 
         else:
             raise ObjectTypeMismatch
@@ -270,6 +279,39 @@ class _TO(datetime.tzinfo):
         return self.zero
 
 
+class IndexObject(CommitObject):
+    def __init__(self, odb, index):
+        self._index = index
+
+        self._odb = odb
+        self._obj = None
+        self.sha = None
+
+        self.parent = None
+        self.name = 'index'
+
+        self._tree = None
+        self._parents = None
+
+    @property
+    def tree(self):
+        if self._tree is None:
+            tree_sha = self._index.commit(self._odb.object_store)
+            self._tree = self._odb.get_tree(tree_sha)
+            self._tree.name = '/'
+            self._tree.set_commit(self)
+
+        return self._tree
+
+    @property
+    def parents(self):
+        return [self._odb.head]
+
+    @property
+    def commit_time(self):
+        return datetime.datetime.now()
+
+
 class ObjectTypeMismatch(Exception):
     pass
 
@@ -307,6 +349,17 @@ class ObjectDatabase(object):
     @property
     def head(self):
         return self.get_commit(self._repo.head())
+
+    @property
+    def index(self):
+        if self._repo.has_index():
+            return IndexObject(self, self._repo.open_index())
+        else:
+            return None
+
+    @property
+    def object_store(self):
+        return self._repo.object_store
 
     @property
     def histories(self):

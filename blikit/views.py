@@ -12,7 +12,10 @@ from blikit.render import render_blob
 
 @urlmap.map_to('/')
 def root(ctx):
-    return redirect(ctx.url_for('view_obj', rev='HEAD'))
+    if ctx.odb.index is not None:
+        return redirect(ctx.url_for('view_obj', rev='index'))
+    else:
+        return redirect(ctx.url_for('view_obj', rev='HEAD'))
 
 @urlmap.map_to('/<rev>/', defaults={'path': '/'})
 @urlmap.map_to('/<rev>/<path:path>')
@@ -34,6 +37,10 @@ def view_obj(ctx, rev, path):
 def tree(ctx, rev, path):
     if rev == 'HEAD':
         commit_obj = ctx.odb.head
+    elif rev == 'index':
+        commit_obj = ctx.odb.index
+        if commit_obj is None:
+            raise NotFound('No such file or directory')
     else:
         commit_obj = ctx.odb.get_commit(rev)
 
@@ -69,6 +76,10 @@ def tree(ctx, rev, path):
 def blob(ctx, rev, path):
     if rev == 'HEAD':
         commit_obj = ctx.odb.head
+    elif rev == 'index':
+        commit_obj = ctx.odb.index
+        if commit_obj is None:
+            raise NotFound('No such file or directory')
     else:
         commit_obj = ctx.odb.get_commit(rev)
 
