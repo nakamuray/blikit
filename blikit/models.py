@@ -37,7 +37,12 @@ class BaseObject(object):
         abs_name = self.abs_name
         while pendings:
             commit = pendings.pop(0)
+            visited.add(commit.sha)
+
             for parent_commit in commit.parents:
+                if parent_commit in visited:
+                    continue
+
                 try:
                     obj_sha = parent_commit.tree[abs_name].sha
                 except KeyError:
