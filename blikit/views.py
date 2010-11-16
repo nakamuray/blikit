@@ -6,15 +6,9 @@ import os
 from werkzeug import Response, redirect
 from werkzeug.exceptions import NotFound
 
-from blikit import urlmap
+from blikit import urlmap, utils
 from blikit.models import BlobObject, LinkObject, TreeObject
 from blikit.render import render_blob
-
-READMES = [
-    'README',
-    'README.txt',
-    'README.rst',
-]
 
 @urlmap.map_to('/')
 def root(ctx):
@@ -53,14 +47,10 @@ def tree(ctx, rev, path):
         # TODO: follow symlink
         raise NotFound('No such file or directory')
 
-    for readme_name in READMES:
-        if readme_name in tree_obj:
-            obj = tree_obj[readme_name]
-            # TODO: follow symlink
-            if isinstance(obj, BlobObject):
-                readme_doc = render_blob(ctx, obj)
-                readme = ctx.render_template('doc.html', doc=readme_doc)
-                break
+    readme_obj = utils.find_readme(tree_obj)
+    if readme_obj is not None:
+        readme_doc = render_blob(ctx, readme_obj)
+        readme = ctx.render_template('doc.html', doc=readme_doc)
 
     else:
         readme = None

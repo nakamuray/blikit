@@ -2,6 +2,8 @@ import Image
 
 from cStringIO import StringIO
 
+from blikit.models import BlobObject, TreeObject, ObjectTypeMismatch
+
 def get_image_size(data):
     img = Image.open(StringIO(data))
     return img.size
@@ -19,3 +21,22 @@ def calc_thumb_size(data, max_size):
         return (w * ratio_h, max_h)
     else:
         return (max_w, h * ratio_w)
+
+READMES = [
+    'README',
+    'README.txt',
+    'README.rst',
+]
+
+def find_readme(tree_obj):
+    if not isinstance(tree_obj, TreeObject):
+        raise ObjectTypeMismatch
+
+    for readme_name in READMES:
+        if readme_name in tree_obj:
+            obj = tree_obj[readme_name]
+            # TODO: follow symlink
+            if isinstance(obj, BlobObject):
+                return obj
+
+    return None
