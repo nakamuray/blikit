@@ -34,7 +34,7 @@ class HTMLTranslator(html4css1.HTMLTranslator):
                 # - search in the git root directory
                 ctx = self.settings.ctx
                 obj = self.settings.obj
-                rev = 'HEAD' if ctx.odb.head == obj.commit else obj.commit.sha
+                rev = obj.commit.name
                 try:
                     ref_obj = obj.parent[refuri]
                     path = ref_obj.abs_name.strip('/')
