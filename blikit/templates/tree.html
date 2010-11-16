@@ -28,6 +28,7 @@
             </tr>
             {%- endif %}
             {%- for name, obj in tree.iteritems() %}
+            {%- if name.startswith('.') %}{% continue %}{% endif %}
             <tr class="{{ row_class.next() }}">
                 {%- if obj.is_tree %}
                 <td class="name"><a class="dir" href="{{ escape(name + '/') }}">{{ name + '/' | escape }}</a></td>

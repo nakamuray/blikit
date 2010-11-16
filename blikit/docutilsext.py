@@ -68,6 +68,7 @@ class ShowContents(Directive):
         'reverse': directives.flag,
         'count': directives.positive_int,
         'pattern': directives.unchanged,
+        'show-hidden': directives.flag,
     }
 
     def run(self):
@@ -111,9 +112,15 @@ class ShowContents(Directive):
 
         is_recursive = self.options.get('recursive', True)
 
+        show_hidden = self.options.get('show-hidden', False)
+
         for root, dirs, files in tree.walk():
             files.sort(key=key_func, reverse=rev)
             for f in files:
+                if f.name.startswith('.') and not show_hidden:
+                    # skip hidden file
+                    continue
+
                 # TODO: filter by pattern
                 count += 1
                 doc = blikit.render.render_blob(ctx, f)
@@ -125,6 +132,10 @@ class ShowContents(Directive):
 
             if not is_recursive:
                 break
+
+            if not show_hidden:
+                # remove hidden dirs
+                dirs[:] = filter(lambda d: not d.name.startswith('.'), dirs)
 
             dirs.sort(key=key_func, reverse=rev)
 

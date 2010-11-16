@@ -3,6 +3,7 @@ import os
 import time
 
 from jinja2 import Environment, FileSystemLoader
+from jinja2.ext import loopcontrols
 
 from werkzeug import Request, ClosingIterator, peek_path_info, pop_path_info
 from werkzeug.exceptions import HTTPException, NotFound
@@ -25,7 +26,8 @@ class Blikit(object):
         if os.path.isdir(repo_template_path):
             template_path_list.append(repo_template_path)
 
-        jinja_env = Environment(loader=FileSystemLoader(template_path_list))
+        jinja_env = Environment(loader=FileSystemLoader(template_path_list),
+                                extensions=[loopcontrols])
         self._jinja_env = jinja_env
 
 
