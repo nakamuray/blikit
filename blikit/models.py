@@ -220,7 +220,7 @@ class CommitObject(BaseObject):
         self._parents = None
 
         if self.sha == self._odb._repo.head():
-            self.name = 'head'
+            self.name = 'HEAD'
         else:
             self.name = self.sha
 
