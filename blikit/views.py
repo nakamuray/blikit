@@ -66,7 +66,8 @@ def tree(ctx, rev, path):
         readme = None
 
     return ctx.render_to_response('tree.html',
-                                  tree=tree_obj, readme=readme, context=ctx)
+                                  commit=commit_obj, tree=tree_obj,
+                                  readme=readme)
 
 #@urlmap.map_to('/<rev>/<path:path>')
 def blob(ctx, rev, path):
@@ -102,6 +103,6 @@ def blob(ctx, rev, path):
                             content_type=content_type)
     else:
         doc = render_blob(ctx, blob_obj)
-        responce = ctx.render_to_response('blob.html', doc=doc, context=ctx)
+        responce = ctx.render_to_response('blob.html', doc=doc)
 
     return responce

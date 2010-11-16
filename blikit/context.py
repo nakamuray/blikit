@@ -40,6 +40,7 @@ class Context(object):
         return str
         '''
         context = {
+            'context': self,
             'url_for': self.url_for,
             'request': self.request,
         }
