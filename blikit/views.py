@@ -109,6 +109,15 @@ def blob(ctx, rev, path):
                             content_type=content_type)
     else:
         doc = render_blob(ctx, blob_obj)
-        responce = ctx.render_to_response('blob.html', doc=doc)
+
+        pathentries = []
+        t = blob_obj.parent
+        while t.parent is not None:
+            pathentries.insert(0, t)
+            t = t.parent
+
+        responce = ctx.render_to_response('blob.html',
+                                          doc=doc, blob=blob_obj,
+                                          commit=commit_obj, pathentries=pathentries)
 
     return responce
