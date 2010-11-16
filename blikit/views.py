@@ -58,7 +58,8 @@ def tree(ctx, rev, path):
             obj = tree_obj[readme_name]
             # TODO: follow symlink
             if isinstance(obj, BlobObject):
-                readme = render_blob(ctx, obj)
+                readme_doc = render_blob(ctx, obj)
+                readme = ctx.render_template('doc.html', doc=readme_doc)
                 break
 
     else:

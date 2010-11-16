@@ -1,8 +1,6 @@
-<html>
-    <head>
-        <title>{{ tree.name }}</title>
-    </head>
-    <body>
+{% extends "base.html" %}
+{% block title %}{{ tree.name }}{% endblock %}
+{% block body %}
         <table>
             <thead>
                 <tr>
@@ -35,9 +33,6 @@
             </tbody>
         </table>
         {%- if readme %}
-        <!-- TODO: use proper header level -->
-        <h1>{{ readme.title|escape }}</h1>
-        {{ readme.body }}
+{{ readme }}
         {%- endif %}
-    </body>
-</html>
+{% endblock %}
