@@ -101,6 +101,7 @@ def render_sourcecode(ctx, blob_obj):
         lexer = TextLexer()
 
     return Document(title=blob_obj.name,
+                    description=lexer.name,
                     body=highlight(data, lexer, formatter))
 
 
