@@ -1,51 +1,49 @@
 {% extends "base.html" %}
 {% block title %}{{ tree.name }}{% endblock %}
 {% block body %}
-<div class="browser">
-    <h1>
-        <a class="pathentry first" href="{{ context.url_for("view_obj", rev=commit.name) }}">{{ commit.name|truncate(length=8, killwords=True) }}</a>
-        <span class="pathentry sep">/</span>
-        {%- for pathentry in pathentries %}
-        <a class="pathentry" href="{{ context.url_for("view_obj", rev=commit.name, path=pathentry.abs_name.strip('/')+'/') }}">{{ pathentry.name|e }}</a>
-        <span class="pathentry sep">/</span>
-        {%- endfor %}
-    </h1>
-    <table class="dirlist">
-        <thead>
-            <tr>
-                <!-- TODO: sort by these colmns -->
-                <th class="name">name</th>
-                <th>last modified</th>
-                <th class="size">size</th>
-                <th>description</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% set row_class = cycler('even', 'odd') %}
-            {%- if tree.parent %}
-            <tr class="{{ row_class.next() }}">
-                <td class="name" colspan="4"><a class="parent" href="../">../</a></td>
-            </tr>
+<h1>
+    <a class="pathentry first" href="{{ context.url_for("view_obj", rev=commit.name) }}">{{ commit.name|truncate(length=8, killwords=True) }}</a>
+    <span class="pathentry sep">/</span>
+    {%- for pathentry in pathentries %}
+    <a class="pathentry" href="{{ context.url_for("view_obj", rev=commit.name, path=pathentry.abs_name.strip('/')+'/') }}">{{ pathentry.name|e }}</a>
+    <span class="pathentry sep">/</span>
+    {%- endfor %}
+</h1>
+<table class="dirlist">
+    <thead>
+        <tr>
+            <!-- TODO: sort by these colmns -->
+            <th class="name">name</th>
+            <th>last modified</th>
+            <th class="size">size</th>
+            <th>description</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% set row_class = cycler('even', 'odd') %}
+        {%- if tree.parent %}
+        <tr class="{{ row_class.next() }}">
+            <td class="name" colspan="4"><a class="parent" href="../">../</a></td>
+        </tr>
+        {%- endif %}
+        {%- for name, obj in tree.iteritems() %}
+        {%- if name.startswith('.') %}{% continue %}{% endif %}
+        <tr class="{{ row_class.next() }}">
+            {%- if obj.is_tree %}
+            <td class="name"><a class="dir" href="{{ escape(name + '/') }}">{{ name + '/' | escape }}</a></td>
+            <td class="mtime">{{ obj.last_modified }}</td>
+            <td class="size">&nbsp;</td> {#- directory has no size #}
+            <td>&nbsp;</td> <!-- TODO: description -->
+            {%- else %}
+            <td class="name"><a class="file" href="{{ escape(name) }}">{{ name | escape }}</a></td>
+            <td class="mtime">{{ obj.last_modified }}</td>
+            <td class="size">{{ obj.size|filesizeformat }}</td> <!-- TODO: size -->
+            <td>&nbsp;</td> <!-- TODO: description -->
             {%- endif %}
-            {%- for name, obj in tree.iteritems() %}
-            {%- if name.startswith('.') %}{% continue %}{% endif %}
-            <tr class="{{ row_class.next() }}">
-                {%- if obj.is_tree %}
-                <td class="name"><a class="dir" href="{{ escape(name + '/') }}">{{ name + '/' | escape }}</a></td>
-                <td class="mtime">{{ obj.last_modified }}</td>
-                <td class="size">&nbsp;</td> {#- directory has no size #}
-                <td>&nbsp;</td> <!-- TODO: description -->
-                {%- else %}
-                <td class="name"><a class="file" href="{{ escape(name) }}">{{ name | escape }}</a></td>
-                <td class="mtime">{{ obj.last_modified }}</td>
-                <td class="size">{{ obj.size|filesizeformat }}</td> <!-- TODO: size -->
-                <td>&nbsp;</td> <!-- TODO: description -->
-                {%- endif %}
-            </tr>
-            {%- endfor %}
-        </tbody>
-    </table>
-</div>
+        </tr>
+        {%- endfor %}
+    </tbody>
+</table>
 {%- if readme %}
 {{ readme }}
 {%- endif %}
