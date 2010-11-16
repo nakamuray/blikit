@@ -219,6 +219,11 @@ class CommitObject(BaseObject):
         self._tree = None
         self._parents = None
 
+        if self.sha == self._odb._repo.head():
+            self.name = 'head'
+        else:
+            self.name = self.sha
+
     @property
     def tree(self):
         if self._tree is None:

@@ -1,3 +1,7 @@
+.browser h1 {
+    font-size: 120%;
+}
+
 /* copied from trac's trac.css */
 table.dirlist {
  clear: both;
@@ -44,6 +48,13 @@ table.dirlist tbody tr:hover { background: #eed !important }
 table.dirlist tbody tr.focus { background: #ddf !important }
 
 /* copied from trac's browser.css */
+.browser h1 { margin: 0; padding: 0 0 .5em }
+.browser h1 :link, h1 :visited, h1 .filename { border: none; padding: 0 .2em }
+.browser h1 :link, h1 :visited { color: #b00 }
+.browser h1 .first:link, h1 .first:visited { color: #998 }
+.browser h1 .sep { color: #666; padding: 0 .1em }
+.browser h1 .pathentry { float: left }
+
 .dirlist { margin-top: 0 }
 .dirlist td.rev, .dirlist td.mtime, .dirlist td.change {
  /* color: #888; */
