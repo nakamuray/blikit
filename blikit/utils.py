@@ -1,10 +1,6 @@
 import Image
 
 from cStringIO import StringIO
-from werkzeug import escape, url_quote, url_quote_plus
-
-def escape_u(url):
-    return escape(url_quote_plus(url))
 
 def get_image_size(data):
     img = Image.open(StringIO(data))
