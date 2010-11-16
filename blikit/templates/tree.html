@@ -30,12 +30,12 @@
         {%- if name.startswith('.') %}{% continue %}{% endif %}
         <tr class="{{ row_class.next() }}">
             {%- if obj.is_tree %}
-            <td class="name"><a class="dir" href="{{ escape(name + '/') }}">{{ name + '/' | escape }}</a></td>
+            <td class="name"><a class="dir" href="{{ name+'/'|e }}">{{ name+'/'|e }}</a></td>
             <td class="mtime">{{ obj.last_modified }}</td>
             <td class="size">&nbsp;</td> {#- directory has no size #}
             <td>&nbsp;</td> <!-- TODO: description -->
             {%- else %}
-            <td class="name"><a class="file" href="{{ escape(name) }}">{{ name | escape }}</a></td>
+            <td class="name"><a class="file" href="{{ name|e }}">{{ name|e }}</a></td>
             <td class="mtime">{{ obj.last_modified }}</td>
             <td class="size">{{ obj.size|filesizeformat }}</td> <!-- TODO: size -->
             <td>&nbsp;</td> <!-- TODO: description -->
