@@ -23,38 +23,60 @@ class HTMLTranslator(html4css1.HTMLTranslator):
 
       + search relative to the directory of the current file
       + search in the git root directory
+
+    - append "?raw=1" to image's URL
     '''
     def visit_reference(self, node):
-        if 'refuri' in node:
-            refuri = node['refuri']
-            if not re.match('^([a-z]+://|/)', refuri):
-                # it's relative link
-                # find file in vim like rule
-                # - search relative to the directory of the current file
-                # - search in the git root directory
-                ctx = self.settings.ctx
-                obj = self.settings.obj
-                rev = obj.commit.name
-                try:
-                    ref_obj = obj.parent[refuri]
-                    path = ref_obj.abs_name.strip('/')
-                    if isinstance(ref_obj, TreeObject):
-                        path = path + '/'
-                    node['refuri'] = ctx.url_for('view_obj', rev=rev, path=path)
-
-                except KeyError:
-                    tree = obj.commit.tree
-                    try:
-                        ref_obj = tree[refuri]
-                        path = ref_obj.abs_name.strip('/')
-                        if isinstance(ref_obj, TreeObject):
-                            path = path + '/'
-                        node['refuri'] = ctx.url_for('view_obj', rev=rev, path=path)
-                    except KeyError:
-                        # can't find file, do nothing
-                        pass
-
+        refuri = self.gf_if_relative_link(node['refuri'])
+        if refuri is not None:
+            node['refuri'] = refuri
         return html4css1.HTMLTranslator.visit_reference(self, node)
+
+    def visit_image(self, node):
+        uri = self.gf_if_relative_link(node['uri'])
+        if uri is not None:
+            node['uri'] = uri + '?raw=1'
+        return html4css1.HTMLTranslator.visit_image(self, node)
+
+    def gf_if_relative_link(self, uri):
+        if not re.match('^([a-z]+://|/)', uri):
+            # it's relative link
+            ctx = self.settings.ctx
+            obj = self.settings.obj
+
+            ref_obj = self.gf(ctx, obj, uri)
+            if ref_obj is not None:
+                rev = obj.commit.name
+                path = ref_obj.abs_name.strip('/')
+
+                if isinstance(ref_obj, TreeObject):
+                    path = path + '/'
+
+                return ctx.url_for('view_obj', rev=rev, path=path)
+
+        return None
+
+    @staticmethod
+    def gf(ctx, obj, path):
+        '''
+        find file in vim like rule
+
+        - search relative to the directory of the current file
+        - search in the git root directory
+
+        return Blob/Tree/LinkObject or None if no file found
+        '''
+        try:
+            return obj.parent[path]
+
+        except KeyError:
+            tree = obj.commit.tree
+            try:
+                return tree[path]
+
+            except KeyError:
+                # can't find file
+                return None
 
 
 class ShowContents(Directive):
