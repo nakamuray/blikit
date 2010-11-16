@@ -18,6 +18,7 @@ from blikit.docutilsext import Writer
 
 class Document(object):
     title = None
+    description = None
     body = None
     def __init__(self, **attrs):
         for name, value in attrs.iteritems():
@@ -70,6 +71,7 @@ def render_text(ctx, blob_obj):
 def render_rst(ctx, blob_obj):
     parts = publish_parts(blob_obj.data, writer=Writer(),
                           settings_overrides={'ctx': ctx, 'obj': blob_obj})
+    parts['description'] = parts['title']
     return Document(**parts)
 
 
