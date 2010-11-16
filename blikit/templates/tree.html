@@ -1,38 +1,36 @@
 {% extends "base.html" %}
 {% block title %}{{ tree.name }}{% endblock %}
 {% block body %}
-        <table>
-            <thead>
-                <tr>
-                    <!-- TODO: sort by these colmns -->
-                    <th>&nbsp;</th>
-                    <th>name</th>
-                    <th>last modified</th>
-                    <th>size</th>
-                    <th>description</th>
-                </tr>
-            </thead>
-            <tbody>
-                {%- for name, obj in tree.iteritems() %}
-                <tr>
-                    {%- if obj.is_tree %}
-                    <td>&nbsp;</td> <!-- TODO: display file type icons -->
-                    <td><a href="{{ escape(name + '/') }}">{{ name + '/' | escape }}</a></td>
-                    <td>{{ obj.last_modified }}</td>
-                    <td>&nbsp;</td> {#- directory has no size #}
-                    <td>&nbsp;</td> <!-- TODO: description -->
-                    {%- else %}
-                    <td>&nbsp;</td> <!-- TODO: display file type icons -->
-                    <td><a href="{{ escape(name) }}">{{ name | escape }}</a></td>
-                    <td>{{ obj.last_modified }}</td>
-                    <td>{{ obj.size|filesizeformat }}</td> <!-- TODO: size -->
-                    <td>&nbsp;</td> <!-- TODO: description -->
-                    {%- endif %}
-                </tr>
-                {%- endfor %}
-            </tbody>
-        </table>
-        {%- if readme %}
+<table class="dirlist">
+    <thead>
+        <tr>
+            <!-- TODO: sort by these colmns -->
+            <th class="name">name</th>
+            <th>last modified</th>
+            <th class="size">size</th>
+            <th>description</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% set row_class = cycler('even', 'odd') %}
+        {%- for name, obj in tree.iteritems() %}
+        <tr class="{{ row_class.next() }}">
+            {%- if obj.is_tree %}
+            <td class="name"><a class="dir" href="{{ escape(name + '/') }}">{{ name + '/' | escape }}</a></td>
+            <td class="mtime">{{ obj.last_modified }}</td>
+            <td class="size">&nbsp;</td> {#- directory has no size #}
+            <td>&nbsp;</td> <!-- TODO: description -->
+            {%- else %}
+            <td class="name"><a class="file" href="{{ escape(name) }}">{{ name | escape }}</a></td>
+            <td class="mtime">{{ obj.last_modified }}</td>
+            <td class="size">{{ obj.size|filesizeformat }}</td> <!-- TODO: size -->
+            <td>&nbsp;</td> <!-- TODO: description -->
+            {%- endif %}
+        </tr>
+        {%- endfor %}
+    </tbody>
+</table>
+{%- if readme %}
 {{ readme }}
-        {%- endif %}
+{%- endif %}
 {% endblock %}

@@ -1,0 +1,109 @@
+/* copied from trac's trac.css */
+table.dirlist {
+ clear: both;
+ border-bottom: 1px solid #d7d7d7;
+ border-collapse: collapse;
+ border-spacing: 0;
+ margin-top: 1em;
+ width: 100%;
+ font-size: 80%;
+}
+table.dirlist th { text-align: left; padding: 0 1em .1em 0; font-size: 12px }
+table.dirlist thead { background: #f7f7f0 }
+table.dirlist thead th {
+ border: 1px solid #d7d7d7;
+ border-bottom-color: #999;
+ font-size: 11px;
+ font-weight: bold;
+ padding: 2px .5em;
+ vertical-align: bottom;
+}
+table.dirlist thead th :link:hover, table.listing thead th :visited:hover {
+ background-color: transparent;
+}
+table.dirlist thead th a { border: none; padding-right: 12px }
+table.dirlist th.asc a, table.listing th.desc a { font-weight: bold }
+table.dirlist th.asc a, table.listing th.desc a {
+ background-position: 100% 50%;
+ background-repeat: no-repeat;
+}
+table.dirlist th.asc a { background-image: url(../asc.png) }
+table.dirlist th.desc a { background-image: url(../desc.png) }
+table.dirlist tbody td, table.listing tbody th {
+ border: 1px dotted #ddd;
+ padding: .3em .5em;
+ vertical-align: top;
+}
+table.dirlist tbody td a:hover, table.listing tbody th a:hover {
+ background-color: transparent;
+}
+table.dirlist tbody tr { border-top: 1px solid #ddd }
+table.dirlist tbody tr.even { background-color: #fcfcfc }
+table.dirlist tbody tr.odd { background-color: #f7f7f7 }
+table.dirlist tbody tr:hover { background: #eed !important }
+table.dirlist tbody tr.focus { background: #ddf !important }
+
+/* copied from trac's browser.css */
+.dirlist { margin-top: 0 }
+.dirlist td.rev, .dirlist td.mtime, .dirlist td.change {
+ /* color: #888; */
+ white-space: nowrap;
+ vertical-align: baseline;
+}
+.dirlist td.rev {
+ font-family: monospace;
+ letter-spacing: -0.08em;
+ font-size: 90%;
+ text-align: right;
+}
+.dirlist td.size {  
+ color: #888;
+ white-space: nowrap;
+ text-align: right;
+ vertical-align: middle;
+ font-size: 70%;
+}
+.dirlist td.mtime {
+ border-width: 0 2px 0 0;
+ border-style: solid;
+ font-size: 85%;
+}
+.dirlist td.name { width: 100% }
+.dirlist td.name a, .dirlist td.name span {
+ background-position: 0% 50%;
+ background-repeat: no-repeat;
+ padding-left: 20px;
+}
+.dirlist td.name a.parent { background-image: url(go-up.png) }
+.dirlist td.name div { white-space: pre }
+.dirlist tr span.expander { 
+  background-image: url(../expander_normal.png); 
+  cursor: pointer; 
+  padding-left: 8px; 
+  margin-left: 4px; 
+}
+.dirlist tr span.expander:hover { 
+  background-image: url(../expander_normal_hover.png); 
+}
+.dirlist tr.expanded span.expander { 
+  background-image: url(../expander_open.png); 
+  padding-left: 12px; 
+  margin-left: 0; 
+}
+.dirlist tr.expanded span.expander:hover { 
+  background-image: url(../expander_open_hover.png); 
+}
+.dirlist td.name a.dir { background-image: url(folder.png) }
+.dirlist td.name a.file { background-image: url(text-x-generic.png); display: block }
+.dirlist td.name a, .dirlist td.rev a { border-bottom: none }
+.dirlist td.rev { text-align: right }
+.dirlist td.change { 
+  font-size: 85%; 
+  vertical-align: middle; 
+  white-space: nowrap 
+}
+
+.dirlist td span.loading { 
+  background-image: url(../loading.gif); 
+  font-style: italic 
+}
