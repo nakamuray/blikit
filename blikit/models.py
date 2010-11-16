@@ -91,6 +91,9 @@ class BaseObject(object):
         else:
             return False
 
+    def __ne__(self, other):
+        return not self == other
+
 
 class BlobObject(BaseObject):
     _size = None
@@ -210,6 +213,35 @@ class TreeObject(BaseObject):
             else:
                 roots.extend(dirs)
 
+    def diff(self, other):
+        '''show differences of two trees
+
+        return ([added object], [removed object], [modified object])
+        '''
+        added = []
+        removed = []
+        modified = []
+
+        my_contents = dict(self.iteritems())
+        for k, v in other.iteritems():
+            if k in my_contents:
+                my_v = my_contents[k]
+                if my_v != v:
+                    if isinstance(my_v, TreeObject):
+                        a, r, m = my_v.diff(v)
+                        added.extend(a)
+                        removed.extend(r)
+                        modified.extend(m)
+
+                    else:
+                        modified.append(my_v)
+
+                del my_contents[k]
+
+        added.extend(my_contents.values())
+
+        return (added, removed, modified)
+
     def find(self, name=None, type_=None, max_depth=None, reverse=False):
         if max_depth is not None:
             if max_depth == 0:
@@ -260,7 +292,16 @@ class CommitObject(BaseObject):
     def commit_time(self):
         return datetime.datetime.fromtimestamp(self._obj.commit_time, _TO(self._obj.commit_timezone))
 
-    def diff(self, other):
+    def diff(self, other=None):
+        '''show differences of two commits
+
+        return ([added object], [removed object], [modified object])
+        '''
+        if other is None:
+            # FIXME: when has no parents
+            # FIXME: when has many parents
+            other = self.parents[0]
+
         if not isinstance(other, CommitObject):
             raise ObjectTypeMismatch('%s object expected, not %s' %
                                      (self.__class__.__name__, repr(other)))
