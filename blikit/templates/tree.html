@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}{{ commit.name }}{{ tree.abs_name+'/'|e }}{% endblock %}
+{% block title %}{{ commit.name }}{{ tree.abs_name.strip('/')+'/'|e }}{% endblock %}
 {% block body %}
 <h1>
     <a class="pathentry first" href="{{ context.url_for("view_obj", rev=commit.name) }}">{{ commit.name|truncate(length=8, killwords=True) }}</a>
