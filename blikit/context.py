@@ -1,7 +1,7 @@
 # vim: fileencoding=utf-8
 from werkzeug import Request, Response
 
-from blikit import urlmap, template_utils
+from blikit import urlmap
 
 class Context(object):
     u'''Store contexts for current HTTP access
@@ -44,10 +44,6 @@ class Context(object):
             'url_for': self.url_for,
             'request': self.request,
         }
-
-        # extract template_utils into context
-        for name in template_utils.__all__:
-            context[name] = getattr(template_utils, name)
 
         context.update(template_context)
 
