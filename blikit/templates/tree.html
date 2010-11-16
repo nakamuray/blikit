@@ -24,7 +24,7 @@
             {% set row_class = cycler('even', 'odd') %}
             {%- if tree.parent %}
             <tr class="{{ row_class.next() }}">
-                <td class="name"><a class="parent" href="../">../</a></td>
+                <td class="name" colspan="4"><a class="parent" href="../">../</a></td>
             </tr>
             {%- endif %}
             {%- for name, obj in tree.iteritems() %}
