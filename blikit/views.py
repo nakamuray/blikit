@@ -65,9 +65,15 @@ def tree(ctx, rev, path):
     else:
         readme = None
 
+    pathentries = []
+    t = tree_obj
+    while t.parent is not None:
+        pathentries.insert(0, t)
+        t = t.parent
+
     return ctx.render_to_response('tree.html',
                                   commit=commit_obj, tree=tree_obj,
-                                  readme=readme)
+                                  pathentries=pathentries, readme=readme)
 
 #@urlmap.map_to('/<rev>/<path:path>')
 def blob(ctx, rev, path):
