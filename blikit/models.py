@@ -1,6 +1,7 @@
 import collections
 import datetime
 import dulwich
+import email.utils
 import fnmatch
 import os
 import stat
@@ -119,6 +120,8 @@ class BlobObject(BaseObject):
 
 
 class LinkObject(BaseObject):
+    size = 0
+
     @property
     def target(self):
         return self.data
@@ -126,6 +129,15 @@ class LinkObject(BaseObject):
 
 class TreeObject(BaseObject):
     is_tree = True
+
+    @property
+    def root_path(self):
+        if self.parent is None:
+            # root
+            return ''
+
+        else:
+            return self.abs_name.lstrip('/') + '/'
 
     def iteritems(self):
         for name, _, _ in self._obj.iteritems():
@@ -280,6 +292,20 @@ class CommitObject(BaseObject):
             self.name = self.sha
 
     @property
+    def author(self):
+        return self._obj.author
+
+    @property
+    def author_name(self):
+        name, _ = email.utils.parseaddr(self.author)
+        return name
+
+    @property
+    def author_email(self):
+        _, addr = email.utils.parseaddr(self.author)
+        return addr
+
+    @property
     def tree(self):
         if self._tree is None:
             self._tree = self._odb.get_tree(self._obj.tree)
@@ -391,6 +417,16 @@ class ObjectDatabase(object):
     get_tree = _make_get(dulwich.objects.Tree, TreeObject)
 
     get_commit = _make_get(dulwich.objects.Commit, CommitObject)
+
+    @property
+    def name(self):
+        path = os.path.abspath(self._repo.path)
+        name = os.path.basename(path)
+
+        if name.endswith('.git'):
+            name = name[:-4]
+
+        return name
 
     @property
     def description(self):
