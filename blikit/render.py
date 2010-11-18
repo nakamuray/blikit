@@ -78,7 +78,9 @@ def render_rst(ctx, blob_obj):
 @register_for('*.png', '*.jpg', '*.jpeg', '*.gif')
 def render_images(ctx, blob_obj):
     w, h = utils.calc_thumb_size(blob_obj.data, (640, 480))
-    raw_url = werkzeug.escape(blob_obj.name) + '?raw=1'
+    url = ctx.url_for('view_obj',
+                      rev=blob_obj.commit.name, path=blob_obj.root_path)
+    raw_url = url + '?raw=1'
     body = '<a href="%s"><img src="%s" width="%d" height="%s"></a>' % \
                (raw_url, raw_url, w, h)
     return Document(title=blob_obj.name, body=body)
