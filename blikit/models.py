@@ -5,6 +5,8 @@ import fnmatch
 import os
 import stat
 
+from subprocess import Popen, PIPE
+
 
 class BaseObject(object):
     def __init__(self, odb, obj):
@@ -94,6 +96,9 @@ class BaseObject(object):
     def __ne__(self, other):
         return not self == other
 
+    def __hash__(self):
+        return hash(self.sha)
+
 
 class BlobObject(BaseObject):
     _size = None
@@ -109,7 +114,7 @@ class BlobObject(BaseObject):
         return self._size
 
 
-class LinkObject(BlobObject):
+class LinkObject(BaseObject):
     @property
     def target(self):
         return self.data
@@ -158,7 +163,7 @@ class TreeObject(BaseObject):
         if mode & stat.S_IFDIR:
             obj = self._odb.get_tree(hash)
 
-        elif mode & stat.S_IFLNK:
+        elif (mode & stat.S_IFLNK) == stat.S_IFLNK:
             obj = self._odb.get_link(hash)
 
         else:
@@ -242,7 +247,7 @@ class TreeObject(BaseObject):
 
         return (added, removed, modified)
 
-    def find(self, name=None, type_=None, max_depth=None, reverse=False):
+    def find(self, name=None, type_=BaseObject, max_depth=None, reverse=False):
         if max_depth is not None:
             if max_depth == 0:
                 return
@@ -250,12 +255,12 @@ class TreeObject(BaseObject):
             max_depth -= 1
 
         for obj_name, obj in sorted(self.iteritems(), reverse=reverse):
-            if (type_ is None or isinstance(obj, type_)) and \
+            if (isinstance(obj, type_)) and \
                (name is None or fnmatch.fnmatch(obj_name, name)):
                 yield obj
 
             if isinstance(obj, TreeObject):
-                for obj_ in obj.find(name, type_, max_depth, reverse):
+                for obj_ in obj.find(name, type_, max_depth):
                     yield obj_
 
 
@@ -377,7 +382,7 @@ class ObjectDatabase(object):
 
     get_blob = _make_get(dulwich.objects.Blob, BlobObject)
 
-    get_link = _make_get(dulwich.objects.Blob, BlobObject)
+    get_link = _make_get(dulwich.objects.Blob, LinkObject)
 
     get_tree = _make_get(dulwich.objects.Tree, TreeObject)
 
@@ -417,3 +422,19 @@ class ObjectDatabase(object):
             yield commit
 
             pending.extend(commit.parents)
+
+    def git(self, *args, **kwargs):
+        '''call git command
+
+        return generator object of output lines
+        '''
+        cmdargs = ['git']
+        cmdargs.extend(args)
+        cmdargs.extend('--%s=%s' % kv for kv in kwargs.iteritems())
+        try:
+            p = Popen(cmdargs, stdout=PIPE, cwd=self._repo.path)
+            for line in p.stdout:
+                yield line.rstrip('\r\n')
+        except GeneratorExit:
+            p.stdout.close()
+            p.wait()
