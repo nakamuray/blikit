@@ -52,7 +52,7 @@ h1 .sep { color: #666; padding: 0 .1em }
 h1 .pathentry { float: left }
 
 .dirlist { margin-top: 0 }
-.dirlist td.rev, .dirlist td.mtime, .dirlist td.change {
+.dirlist td.rev, .dirlist td.mtime, .dirlist td.description {
  /* color: #888; */
  white-space: nowrap;
  vertical-align: baseline;
@@ -71,8 +71,6 @@ h1 .pathentry { float: left }
  font-size: 70%;
 }
 .dirlist td.mtime {
- border-width: 0 2px 0 0;
- border-style: solid;
  font-size: 85%;
 }
 .dirlist td.name { width: 100% }
@@ -104,7 +102,7 @@ h1 .pathentry { float: left }
 .dirlist td.name a.file { background-image: url(text-x-generic.png); display: block }
 .dirlist td.name a, .dirlist td.rev a { border-bottom: none }
 .dirlist td.rev { text-align: right }
-.dirlist td.change { 
+.dirlist td.description {
   font-size: 85%; 
   vertical-align: middle; 
   white-space: nowrap 

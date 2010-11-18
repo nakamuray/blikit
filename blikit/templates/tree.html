@@ -14,9 +14,9 @@
         <tr>
             <!-- TODO: sort by these colmns -->
             <th class="name">name</th>
-            <th>last modified</th>
+            <th class="mtime">last modified</th>
             <th class="size">size</th>
-            <th>description</th>
+            <th class="description">description</th>
         </tr>
     </thead>
     <tbody>
@@ -38,7 +38,7 @@
             <td class="name"><a class="file" href="{{ name|e }}">{{ name|e }}</a></td>
             <td class="mtime">{{ obj.last_modified }}</td>
             <td class="size">{{ obj.size|filesizeformat }}</td> <!-- TODO: size -->
-            <td>{{ obj|description|default("", true)|e }}</td>
+            <td class="description">{{ obj|description|default("", true)|e }}</td>
             {%- endif %}
         </tr>
         {%- endfor %}
