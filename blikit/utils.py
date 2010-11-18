@@ -110,7 +110,8 @@ def recent_files(odb, count=None, path=None, pattern=None, show_hidden=False):
             # to hide dot directories find "/." in obj.abs_name
             if isinstance(obj, BlobObject) and \
                (show_hidden or '/.' not in obj.abs_name) and \
-               obj.abs_name not in added_names:
+               obj.abs_name not in added_names and \
+               obj.abs_name in odb.head.tree:
                 added_names.add(obj.abs_name)
                 bisect.insort_right(results, (commit_obj.commit_time, obj))
 
