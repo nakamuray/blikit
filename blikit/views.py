@@ -4,6 +4,7 @@ import mimetypes
 import os
 
 from werkzeug import Response, redirect
+from werkzeug.contrib.atom import AtomFeed
 from werkzeug.exceptions import NotFound
 
 from blikit import urlmap, utils
@@ -122,3 +123,24 @@ def blob(ctx, rev, path):
                                           commit=commit_obj, pathentries=pathentries)
 
     return responce
+
+@urlmap.map_to('/atom')
+def atom(ctx):
+    feed = AtomFeed(ctx.odb.name,
+                    feed_url=ctx.url_for('atom'),
+                    url=ctx.url_for('root'),
+                    subtitle=ctx.odb.description)
+
+    for added_date, blob_obj in utils.recent_files(ctx.odb, count=10):
+        assert isinstance(blob_obj, BlobObject)
+
+        current_blob_obj = ctx.odb.head.tree[blob_obj.abs_name]
+
+        doc = render_blob(ctx, current_blob_obj)
+        url = 'http://' + ctx.request.host + \
+                ctx.url_for('view_obj', rev='HEAD', path=blob_obj.root_path)
+        feed.add(doc.title, doc.body, content_type='html',
+                 author=blob_obj.commit.author_name, url=url,
+                 updated=blob_obj.last_modified, published=added_date)
+
+    return feed.get_response()

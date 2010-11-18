@@ -5,6 +5,7 @@
         <link rel="stylesheet" href="/static/style.css" type="text/css">
         <link rel="stylesheet" href="/static/style-doc.css" type="text/css">
         <link rel="stylesheet" href="/static/style-dir.css" type="text/css">
+        <link href="{{ context.url_for('atom') }}" type="application/atom+xml" rel="alternate">
         {%- block head %}{% endblock %}
     </head>
     <body>
