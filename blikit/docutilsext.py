@@ -27,9 +27,11 @@ class HTMLTranslator(html4css1.HTMLTranslator):
     - append "?raw=1" to image's URL
     '''
     def visit_reference(self, node):
-        refuri = self.gf_if_relative_link(node['refuri'])
-        if refuri is not None:
-            node['refuri'] = refuri
+        if 'refuri' in node:
+            refuri = self.gf_if_relative_link(node['refuri'])
+            if refuri is not None:
+                node['refuri'] = refuri
+
         return html4css1.HTMLTranslator.visit_reference(self, node)
 
     def visit_image(self, node):
