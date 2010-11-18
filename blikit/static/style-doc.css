@@ -115,10 +115,9 @@ table.docutils td {
 
 ul {
     list-style-type: square;
+    padding-left: 2em;
 }
 
 ul, ol {
     list-style-position: outside;
-    padding-left: 1em;
 }
-
