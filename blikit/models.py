@@ -33,6 +33,10 @@ class BaseObject(object):
         return os.path.join(*paths)
 
     @property
+    def root_path(self):
+        return self.abs_name.lstrip('/')
+
+    @property
     def last_modified(self):
         visited = set()
         pendings = [self.commit]
