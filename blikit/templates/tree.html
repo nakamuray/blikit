@@ -38,7 +38,7 @@
             <td class="name"><a class="file" href="{{ name|e }}">{{ name|e }}</a></td>
             <td class="mtime">{{ obj.last_modified }}</td>
             <td class="size">{{ obj.size|filesizeformat }}</td> <!-- TODO: size -->
-            <td class="description">{{ obj|description|default("", true)|e }}</td>
+            <td class="description">{{ obj|description|default("", true) }}</td>
             {%- endif %}
         </tr>
         {%- endfor %}

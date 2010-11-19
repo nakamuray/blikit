@@ -139,7 +139,7 @@ def atom(ctx):
         doc = render_blob(ctx, current_blob_obj)
         url = 'http://' + ctx.request.host + \
                 ctx.url_for('view_obj', rev='HEAD', path=blob_obj.root_path)
-        feed.add(doc.title, doc.body, content_type='html',
+        feed.add(doc.title, doc.body, title_type='html', content_type='html',
                  author=blob_obj.commit.author_name, url=url,
                  updated=blob_obj.last_modified, published=added_date)
 
