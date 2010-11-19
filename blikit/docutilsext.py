@@ -1,3 +1,4 @@
+import fnmatch
 import re
 
 from docutils import nodes
@@ -138,6 +139,8 @@ class ShowContents(Directive):
 
         show_hidden = 'show-hidden' in self.options
 
+        pattern = self.options.get('pattern', None)
+
         for root, dirs, files in tree.walk():
             files.sort(key=key_func, reverse=is_reverse)
             for f in files:
@@ -145,7 +148,9 @@ class ShowContents(Directive):
                     # skip hidden file
                     continue
 
-                # TODO: filter by pattern
+                if pattern is not None and not fnmatch.fnmatch(f.name, pattern):
+                    continue
+
                 count += 1
                 doc = blikit.render.render_blob(ctx, f)
                 html = ctx.render_template('innerdoc.html', doc=doc, blob=f,
