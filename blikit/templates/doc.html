@@ -11,6 +11,9 @@
 <div class="document">
     {{ doc.body }}
     <div class="footer">
-        author: {{ blob.author_name }} | created: {{ blob.created|dateformat }} | modified: {{ blob.last_modified|dateformat }}
+        author: {{ blob.author_name }}
+      | created: {{ blob.created|dateformat }}
+      | modified: {{ blob.last_modified|dateformat }}
+      | <a href="{{ context.url_for('view_obj', rev=commit.name, path=blob.root_path) }}?raw=1">raw</a>
     </div>
 </div>
