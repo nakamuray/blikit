@@ -9,6 +9,10 @@
         {%- block head %}{% endblock %}
     </head>
     <body>
+        <div class="header">
+            <h1>{{ context.app.site_name|e }}</h1>
+            <h2>{{ context.app.site_description|e }}</h2>
+        </div>
         <div class="sidebar">
             <h1>recent documents</h1>
             {% for group in recent_files()|groupby('date')|reverse %}

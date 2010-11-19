@@ -45,6 +45,20 @@ ul, ol {
     list-style-position: outside;
 }
 
+div.header {
+    height: 120px;
+}
+
+div.header h1 {
+    font-size: 170%;
+}
+
+div.header h2 {
+    font-size: 100%;
+    color: #555555;
+    font-weight: normal;
+}
+
 div.main {
     float: right;
     width: 85%;

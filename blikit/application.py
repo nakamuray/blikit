@@ -14,10 +14,20 @@ from blikit.context import Context
 DEFAULT_TEMPLATE_PATH = os.path.join(os.path.dirname(__file__), 'templates')
 
 class Blikit(object):
-    def __init__(self, repo_path):
+    def __init__(self, repo_path, site_name=None, site_description=None):
         self._repo_path = repo_path
         self._odb = models.ObjectDatabase(repo_path)
         self._init_jinja_env()
+
+        if site_name is None:
+            site_name = self._odb.name
+
+        self.site_name = site_name
+
+        if site_description is None:
+            site_description = self._odb.description
+
+        self.site_description = site_description
 
     def _init_jinja_env(self):
         template_path_list = [DEFAULT_TEMPLATE_PATH]
