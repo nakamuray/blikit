@@ -31,12 +31,12 @@
         <tr class="{{ row_class.next() }}">
             {%- if obj.is_tree %}
             <td class="name"><a class="dir" href="{{ name+'/'|e }}">{{ name+'/'|e }}</a></td>
-            <td class="mtime">{{ obj.last_modified }}</td>
+            <td class="mtime">{{ obj.last_modified|dateformat }}</td>
             <td class="size">&nbsp;</td> {#- directory has no size #}
             <td>{{ obj|description|default("", true)|e }}</td>
             {%- else %}
             <td class="name"><a class="file" href="{{ name|e }}">{{ name|e }}</a></td>
-            <td class="mtime">{{ obj.last_modified }}</td>
+            <td class="mtime">{{ obj.last_modified|dateformat }}</td>
             <td class="size">{{ obj.size|filesizeformat }}</td> <!-- TODO: size -->
             <td class="description">{{ obj|description|default("", true) }}</td>
             {%- endif %}

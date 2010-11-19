@@ -5,7 +5,7 @@ from blikit import utils
 from blikit.models import BlobObject, TreeObject
 from blikit.render import render_blob
 
-__all__ = ['escape_u', 'description', 'title']
+__all__ = ['escape_u', 'description', 'title', 'dateformat']
 
 def escape_u(url):
     return escape(url_quote_plus(url))
@@ -45,3 +45,6 @@ def title(context, obj):
     else:
         # TODO: LinkObject
         pass
+
+def dateformat(datetime, fmt='%Y-%m-%d %H:%M'):
+    return datetime.strftime(fmt)

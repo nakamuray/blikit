@@ -11,6 +11,6 @@
 <div class="document">
     {{ doc.body }}
     <div class="footer">
-        author: {{ blob.author_name }} | created: {{ blob.created }} | modified: {{ blob.last_modified }}
+        author: {{ blob.author_name }} | created: {{ blob.created|dateformat }} | modified: {{ blob.last_modified|dateformat }}
     </div>
 </div>
