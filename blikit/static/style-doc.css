@@ -2,6 +2,10 @@
     font-size: 90%;
 }
 
+div.document div {
+    margin: 1em 0 1em 0;
+}
+
 .document pre {
     width: auto;
     overflow: auto;
