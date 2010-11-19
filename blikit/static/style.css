@@ -84,3 +84,11 @@ div.sidebar {
 div.contents {
     padding-left: 1em;
 }
+
+div.poweredby {
+    clear: both;
+    text-align: right;
+    font-size: 80%;
+    font-style: italic;
+    color: #555555;
+}
