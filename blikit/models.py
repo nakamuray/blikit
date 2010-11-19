@@ -66,6 +66,10 @@ class BaseObject(object):
                     if created is None or commit_time < created:
                         created = commit_time
 
+            else:
+                # no parents -> initial commit
+                created = commit.commit_time
+
         return created
 
     @property
