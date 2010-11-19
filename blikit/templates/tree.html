@@ -5,7 +5,7 @@
     <a class="pathentry first" href="{{ context.url_for("view_obj", rev=commit.name) }}">{{ commit.name|truncate(length=8, killwords=True) }}</a>
     <span class="pathentry sep">/</span>
     {%- for pathentry in pathentries %}
-    <a class="pathentry" href="{{ context.url_for("view_obj", rev=commit.name, path=pathentry.abs_name.strip('/')+'/') }}">{{ pathentry.name|e }}</a>
+    <a class="pathentry" href="{{ context.url_for("view_obj", rev=commit.name, path=pathentry.root_path) }}">{{ pathentry.name|e }}</a>
     <span class="pathentry sep">/</span>
     {%- endfor %}
 </h1>
