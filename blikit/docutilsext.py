@@ -97,6 +97,13 @@ class ShowContents(Directive):
     }
 
     def run(self):
+        is_recursive = not 'no-recursive' in self.options
+        order_by = self.options.get('order_by', 'name')
+        is_reverse = 'reverse' in self.options
+        max_count = self.options.get('count', None)
+        pattern = self.options.get('pattern', None)
+        show_hidden = 'show-hidden' in self.options
+
         ctx = self.state.document.settings.ctx
 
         obj = self.state.document.settings.obj
@@ -122,24 +129,14 @@ class ShowContents(Directive):
                 )
                 return [error]
 
-        order_by = self.options.get('order_by', 'name')
         if order_by == 'name':
             key_func = lambda x: x.name
 
         elif order_by == 'last_modified':
             key_func = lambda x: x.last_modified
 
-        is_reverse = 'reverse' in self.options
-
-        max_count = self.options.get('count', None)
         count = 0
         result = []
-
-        is_recursive = not 'no-recursive' in self.options
-
-        show_hidden = 'show-hidden' in self.options
-
-        pattern = self.options.get('pattern', None)
 
         for root, dirs, files in tree.walk():
             files.sort(key=key_func, reverse=is_reverse)
