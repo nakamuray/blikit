@@ -87,7 +87,7 @@ class ShowContents(Directive):
     optional_arguments = 1
     final_argument_whitespace = True
     option_spec = {
-        'recursive': directives.flag,
+        'no-recursive': directives.flag,
         'order_by': lambda x: directives.choice(x, ('name', 'last_modified')),
         'reverse': directives.flag,
         'count': directives.positive_int,
@@ -128,18 +128,18 @@ class ShowContents(Directive):
         elif order_by == 'last_modified':
             key_func = lambda x: x.last_modified
 
-        rev = self.options.get('reverse', False)
+        is_reverse = 'reverse' in self.options
 
         max_count = self.options.get('count', None)
         count = 0
         result = []
 
-        is_recursive = self.options.get('recursive', True)
+        is_recursive = not 'no-recursive' in self.options
 
-        show_hidden = self.options.get('show-hidden', False)
+        show_hidden = 'show-hidden' in self.options
 
         for root, dirs, files in tree.walk():
-            files.sort(key=key_func, reverse=rev)
+            files.sort(key=key_func, reverse=is_reverse)
             for f in files:
                 if f.name.startswith('.') and not show_hidden:
                     # skip hidden file
@@ -162,7 +162,7 @@ class ShowContents(Directive):
                 # remove hidden dirs
                 dirs[:] = filter(lambda d: not d.name.startswith('.'), dirs)
 
-            dirs.sort(key=key_func, reverse=rev)
+            dirs.sort(key=key_func, reverse=is_reverse)
 
         return result
 
