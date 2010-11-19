@@ -1,3 +1,5 @@
+# vim: fileencoding=utf-8
+
 import collections
 import datetime
 import dulwich
@@ -38,7 +40,40 @@ class BaseObject(object):
         return self.abs_name.lstrip('/')
 
     @property
+    def author_name(self):
+        return self.last_modified_commit.author_name
+
+    @property
+    def created(self):
+        # XXX: last_modified と似ているので、うまくまとめる
+        created = None
+        visited = set()
+        pendings = [self.commit]
+        abs_name = self.abs_name
+        while pendings:
+            commit = pendings.pop(0)
+            visited.add(commit.sha)
+
+            for parent_commit in commit.parents:
+                if parent_commit in visited:
+                    continue
+
+                if abs_name in parent_commit.tree:
+                    pendings.append(parent_commit)
+
+                else:
+                    commit_time = parent_commit.commit_time
+                    if created is None or commit_time < created:
+                        created = commit_time
+
+        return created
+
+    @property
     def last_modified(self):
+        return self.last_modified_commit.commit_time
+
+    @property
+    def last_modified_commit(self):
         visited = set()
         pendings = [self.commit]
         abs_name = self.abs_name
@@ -63,10 +98,10 @@ class BaseObject(object):
             else:
                 # all parents has different sha,
                 # so this file was altered by this commit
-                return commit.commit_time
+                return commit
 
         # maybe initial commit
-        return commit.commit_time
+        return commit
 
     @property
     def commit(self):

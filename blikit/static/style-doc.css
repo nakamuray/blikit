@@ -117,11 +117,7 @@ table.docutils td {
   padding: 1%;
 }
 
-ul {
-    list-style-type: square;
-    padding-left: 2em;
-}
-
-ul, ol {
-    list-style-position: outside;
+.document div.footer {
+    font-size: 80%;
+    text-align: right;
 }

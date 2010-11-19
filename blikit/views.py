@@ -58,7 +58,7 @@ def tree(ctx, rev, path):
     readme_obj = utils.find_readme(tree_obj)
     if readme_obj is not None:
         readme_doc = render_blob(ctx, readme_obj)
-        readme = ctx.render_template('doc.html', doc=readme_doc)
+        readme = ctx.render_template('readme.html', doc=readme_doc)
 
     else:
         readme = None

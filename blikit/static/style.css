@@ -36,6 +36,15 @@ a:hover img {
     border: 2px solid #cccccc;
 }
 
+ul {
+    list-style-type: square;
+    padding-left: 2em;
+}
+
+ul, ol {
+    list-style-position: outside;
+}
+
 div.main {
     float: right;
     width: 85%;
