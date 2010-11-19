@@ -8,6 +8,9 @@ class Context(object):
 
     Context object hold these attributes:
 
+    app
+      blikit.application.Blikit object
+
     request
       werkzeug.Request object for current HTTP access
 
@@ -21,9 +24,10 @@ class Context(object):
     jinja_env
       jinja2.Environment object
     '''
-    __slots__ = ['request', 'odb', 'url_adapter', 'jinja_env']
+    __slots__ = ['app', 'request', 'odb', 'url_adapter', 'jinja_env']
 
-    def __init__(self, environ, odb, jinja_env):
+    def __init__(self, app, environ, odb, jinja_env):
+        self.app = app
         self.request = Request(environ)
         self.odb = odb
         self.url_adapter = urlmap.bind_to_environ(environ)

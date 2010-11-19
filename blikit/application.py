@@ -41,7 +41,7 @@ class Blikit(object):
 
 
     def __call__(self, environ, start_response):
-        context = Context(environ, self._odb, self._jinja_env)
+        context = Context(self, environ, self._odb, self._jinja_env)
         try:
             endpoint, values = context.url_adapter.match()
             handler = getattr(views, endpoint)
