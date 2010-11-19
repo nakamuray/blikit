@@ -51,6 +51,7 @@ div.header {
 
 div.header h1 {
     font-size: 170%;
+    padding-bottom: 0;
 }
 
 div.header h2 {
