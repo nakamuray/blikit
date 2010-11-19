@@ -9,6 +9,21 @@
         {%- block head %}{% endblock %}
     </head>
     <body>
-        {%- block body %}{% endblock %}
+        <div class="sidebar">
+            <h1>recent documents</h1>
+            {% for group in recent_files()|groupby('date')|reverse %}
+            <h2>{{ group.grouper }}</h2>
+            <ul>
+                {% for r in group.list %}
+                <li><a href="{{ context.url_for('view_obj', rev='HEAD', path=r.blob.root_path) }}">{{ r.blob|title }}</a></li>
+                {% endfor %}
+            </ul>
+            {% endfor %}
+        </div>
+        <div class="main">
+            <div class="contents">
+                {%- block body %}{% endblock %}
+            </div>
+        </div>
     </body>
 </html>

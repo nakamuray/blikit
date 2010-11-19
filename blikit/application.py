@@ -8,7 +8,7 @@ from jinja2.ext import loopcontrols
 from werkzeug import Request, ClosingIterator, peek_path_info, pop_path_info
 from werkzeug.exceptions import HTTPException, NotFound
 
-from blikit import models, views, template_filters
+from blikit import models, views, template_filters, template_functions
 from blikit.context import Context
 
 DEFAULT_TEMPLATE_PATH = os.path.join(os.path.dirname(__file__), 'templates')
@@ -32,6 +32,10 @@ class Blikit(object):
         # add template filters
         for name in template_filters.__all__:
             jinja_env.filters[name] = getattr(template_filters, name)
+
+        # add template functions
+        for name in template_functions.__all__:
+            jinja_env.globals[name] = getattr(template_functions, name)
 
         self._jinja_env = jinja_env
 

@@ -5,7 +5,7 @@ from blikit import utils
 from blikit.models import BlobObject, TreeObject
 from blikit.render import render_blob
 
-__all__ = ['escape_u', 'description']
+__all__ = ['escape_u', 'description', 'title']
 
 def escape_u(url):
     return escape(url_quote_plus(url))
@@ -19,11 +19,28 @@ def description(context, obj):
         return doc.description
 
     elif isinstance(obj, TreeObject):
-        # TODO: search README and return README's title
         readme_obj = utils.find_readme(obj)
         if readme_obj is not None:
             readme_doc = render_blob(ctx, readme_obj)
             return readme_doc.description
+
+    else:
+        # TODO: LinkObject
+        pass
+
+@contextfilter
+def title(context, obj):
+    ctx = context['context']
+
+    if isinstance(obj, BlobObject):
+        doc = render_blob(ctx, obj)
+        return doc.title
+
+    elif isinstance(obj, TreeObject):
+        readme_obj = utils.find_readme(obj)
+        if readme_obj is not None:
+            readme_doc = render_blob(ctx, readme_obj)
+            return readme_doc.title
 
     else:
         # TODO: LinkObject

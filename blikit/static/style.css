@@ -36,3 +36,27 @@ a:hover img {
     border: 2px solid #cccccc;
 }
 
+div.main {
+    float: right;
+    width: 85%;
+}
+
+div.sidebar {
+    float: left;
+    width: 15%;
+    font-size: 80%;
+}
+
+.sidebar h1 {
+    font-size: 90%;
+    font-weight: normal;
+}
+
+.sidebar h2 {
+    font-size: 80%;
+    font-weight: normal;
+}
+
+div.contents {
+    padding-left: 1em;
+}
