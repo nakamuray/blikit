@@ -2,12 +2,10 @@
 {% block title %}{{ commit.name }}/{{ tree.root_path|e }}{% endblock %}
 {% block body %}
 <h1>
-    <a class="pathentry first" href="{{ context.url_for("view_obj", rev=commit.name) }}">{{ commit.name|truncate(length=8, killwords=True) }}</a>
+    {%- with obj = tree %}
+    {%- include "breadcrumb-list.html" %}
+    {%- endwith %}
     <span class="pathentry sep">/</span>
-    {%- for pathentry in pathentries %}
-    <a class="pathentry" href="{{ context.url_for("view_obj", rev=commit.name, path=pathentry.root_path) }}">{{ pathentry.name|e }}</a>
-    <span class="pathentry sep">/</span>
-    {%- endfor %}
 </h1>
 <table class="dirlist">
     <thead>
