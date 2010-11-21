@@ -393,6 +393,8 @@ class _TO(datetime.tzinfo):
         return None
     def dst(self, dt):
         return self.zero
+    def __getinitargs__(self):
+        return (self._offset.seconds, )
 
 
 class IndexObject(CommitObject):
