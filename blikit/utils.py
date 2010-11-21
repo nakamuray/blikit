@@ -128,7 +128,8 @@ def recent_files(ctx, count=None, path=None, pattern=None, show_hidden=False):
                obj.abs_name not in added_names and \
                obj.abs_name in odb.head.tree:
                 added_names.add(obj.abs_name)
-                bisect.insort_right(results, (commit_obj.commit_time, obj.root_path))
+                bisect.insort_right(results,
+                                    (commit_obj.commit_time, obj.root_path))
 
         if count is not None:
             while len(results) > count:

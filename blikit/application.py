@@ -57,13 +57,15 @@ class Blikit(object):
         cache_dir = os.path.join(self._odb.controldir, 'blikit-cache')
         if os.path.isdir(cache_dir):
             if os.access(cache_dir, os.R_OK|os.W_OK|os.X_OK):
-                self.cache = FileSystemCache(cache_dir, default_timeout=default_timeout)
+                self.cache = FileSystemCache(cache_dir,
+                                             default_timeout=default_timeout)
             else:
                 self.cache = NullCache()
 
         elif os.access(self._repo_path, os.W_OK):
             os.mkdir(cache_dir)
-            self.cache = FileSystemCache(cache_dir, default_timeout=default_timeout)
+            self.cache = FileSystemCache(cache_dir,
+                                         default_timeout=default_timeout)
 
         else:
             self.cache = NullCache()

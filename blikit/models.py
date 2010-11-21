@@ -365,7 +365,8 @@ class CommitObject(BaseObject):
 
     @property
     def commit_time(self):
-        return datetime.datetime.fromtimestamp(self._obj.commit_time, _TO(self._obj.commit_timezone))
+        return datetime.datetime.fromtimestamp(self._obj.commit_time,
+                                               _TO(self._obj.commit_timezone))
 
     def diff(self, other=None):
         '''show differences of two commits
