@@ -432,7 +432,7 @@ class IndexObject(CommitObject):
 
     @property
     def commit_time(self):
-        return datetime.datetime.now(_TO(time.timezone))
+        return datetime.datetime.now(_TO(-time.timezone))
 
 
 class ObjectTypeMismatch(Exception):
