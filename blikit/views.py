@@ -119,7 +119,8 @@ def atom(ctx):
                     url=ctx.url_for('root'),
                     subtitle=ctx.odb.description)
 
-    for added_date, blob_obj in utils.recent_files(ctx.odb, count=10):
+    for added_date, root_path in utils.recent_files(ctx, count=10):
+        blob_obj = ctx.odb.head.tree[root_path]
         assert isinstance(blob_obj, BlobObject)
 
         current_blob_obj = ctx.odb.head.tree[blob_obj.abs_name]
@@ -128,7 +129,7 @@ def atom(ctx):
         url = 'http://' + ctx.request.host + \
                 ctx.url_for('view_obj', rev='HEAD', path=blob_obj.root_path)
         feed.add(doc.title, doc.body, title_type='html', content_type='html',
-                 author=blob_obj.commit.author_name, url=url,
-                 updated=blob_obj.last_modified, published=added_date)
+                 author=doc.author_name, url=url,
+                 updated=doc.last_modified, published=added_date)
 
     return feed.get_response()

@@ -8,10 +8,10 @@ __all__ = ['recent_files', 'pathentries']
 
 @contextfunction
 def recent_files(context, count=10):
-    odb = context['context'].odb
+    ctx = context['context']
     Recent = collections.namedtuple('Recent', 'date blob')
-    for commit_time, blob_obj in utils.recent_files(odb, count):
-        yield Recent(commit_time.date(), blob_obj)
+    for commit_time, root_path in utils.recent_files(ctx, count):
+        yield Recent(commit_time.date(), ctx.odb.head.tree[root_path])
 
 def pathentries(obj):
     result = []

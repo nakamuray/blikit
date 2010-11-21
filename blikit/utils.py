@@ -45,11 +45,23 @@ def find_readme(tree_obj):
 
     return None
 
-def recent_files(odb, count=None, path=None, pattern=None, show_hidden=False):
+def recent_files(ctx, count=None, path=None, pattern=None, show_hidden=False):
     '''search recently added files
 
-    return [(datetime.datetime when file added, file_path)]
+    return [(datetime.datetime when file created, root_path)]
     '''
+    cache_key = 'uils.recent_documents:%s:%s:%s:%s' % \
+            (ctx.odb.head.sha, repr(path), repr(pattern), show_hidden)
+    cached = ctx.app.cache.get(cache_key)
+    if cached is not None:
+        cached_count, cached_result = cached
+        if cached_count == count:
+            return cached_result
+
+        elif cached_count > count:
+            return cached_result[:count]
+
+    odb = ctx.odb
     args = ['--date-order']
 
     if path is None:
@@ -116,7 +128,7 @@ def recent_files(odb, count=None, path=None, pattern=None, show_hidden=False):
                obj.abs_name not in added_names and \
                obj.abs_name in odb.head.tree:
                 added_names.add(obj.abs_name)
-                bisect.insort_right(results, (commit_obj.commit_time, obj))
+                bisect.insort_right(results, (commit_obj.commit_time, obj.root_path))
 
         if count is not None:
             while len(results) > count:
@@ -124,4 +136,8 @@ def recent_files(odb, count=None, path=None, pattern=None, show_hidden=False):
                 results.pop(0)
 
     results.reverse()
+
+    if cached is None or cached_count < count:
+        ctx.app.cache.set(cache_key, (count, results))
+
     return results
