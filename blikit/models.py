@@ -423,6 +423,10 @@ class IndexObject(CommitObject):
         return [self._odb.head]
 
     @property
+    def author_name(self):
+        return 'index'
+
+    @property
     def commit_time(self):
         return datetime.datetime.now()
 
