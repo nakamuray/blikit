@@ -7,6 +7,7 @@ import email.utils
 import fnmatch
 import os
 import stat
+import time
 
 from subprocess import Popen, PIPE
 
@@ -428,7 +429,7 @@ class IndexObject(CommitObject):
 
     @property
     def commit_time(self):
-        return datetime.datetime.now()
+        return datetime.datetime.now(_TO(time.timezone))
 
 
 class ObjectTypeMismatch(Exception):
