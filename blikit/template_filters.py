@@ -5,10 +5,15 @@ from blikit import utils
 from blikit.models import BlobObject, TreeObject
 from blikit.render import render_blob
 
-__all__ = ['escape_u', 'description', 'title', 'dateformat']
+__all__ = ['escape_u', 'document', 'description', 'title', 'dateformat']
 
 def escape_u(url):
     return escape(url_quote_plus(url))
+
+@contextfilter
+def document(context, obj):
+    ctx = context['context']
+    return render_blob(ctx, obj)
 
 @contextfilter
 def description(context, obj):

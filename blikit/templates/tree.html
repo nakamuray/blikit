@@ -33,10 +33,11 @@
             <td class="size">&nbsp;</td> {#- directory has no size #}
             <td>{{ obj|description|default("", true)|e }}</td>
             {%- else %}
+            {%- set doc = obj|document %}
             <td class="name"><a class="file" href="{{ name|e }}">{{ name|e }}</a></td>
-            <td class="mtime">{{ obj.last_modified|dateformat }}</td>
+            <td class="mtime">{{ doc.last_modified|dateformat }}</td>
             <td class="size">{{ obj.size|filesizeformat }}</td> <!-- TODO: size -->
-            <td class="description">{{ obj|description|default("", true) }}</td>
+            <td class="description">{{ doc.description|default("", true) }}</td>
             {%- endif %}
         </tr>
         {%- endfor %}
