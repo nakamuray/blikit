@@ -469,7 +469,7 @@ class ObjectDatabase(object):
 
     @property
     def description(self):
-        return self._repo.get_named_file('description').read()
+        return self._repo.get_named_file('description').read().decode('utf-8')
 
     @property
     def head(self):
