@@ -54,6 +54,10 @@ div.header h1 {
     padding-bottom: 0;
 }
 
+div.header a {
+    color: black;
+}
+
 div.header h2 {
     font-size: 100%;
     color: #555555;
