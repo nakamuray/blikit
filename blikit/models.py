@@ -477,6 +477,10 @@ class ObjectDatabase(object):
         return self._repo.get_named_file('description').read().decode('utf-8')
 
     @property
+    def controldir(self):
+        return self._repo.controldir()
+
+    @property
     def head(self):
         return self.get_commit(self._repo.head())
 
