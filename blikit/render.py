@@ -49,12 +49,18 @@ def render_blob(ctx, blob_obj):
 
     if there is no render function for this object, return None
     '''
-    cache_key = 'render.render_blob:%s:%s' % \
-            (blob_obj.commit.sha, blob_obj.abs_name)
+    if blob_obj.commit.sha is None:
+        # IndexObject
+        # don't cache
+        pass
 
-    cached = ctx.app.cache.get(cache_key)
-    if cached is not None:
-        return cached
+    else:
+        cache_key = 'render.render_blob:%s:%s' % \
+                (blob_obj.commit.sha, blob_obj.abs_name)
+
+        cached = ctx.app.cache.get(cache_key)
+        if cached is not None:
+            return cached
 
     if not isinstance(blob_obj, BlobObject):
         # TODO: raise proper exception
@@ -78,7 +84,8 @@ def render_blob(ctx, blob_obj):
         if result.created is None:
             result.created = blob_obj.created
 
-    ctx.app.cache.set(cache_key, result)
+    if blob_obj.commit.sha is not None:
+        ctx.app.cache.set(cache_key, result)
 
     return result
 
