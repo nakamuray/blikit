@@ -6,6 +6,7 @@ from jinja2 import Environment, FileSystemLoader
 from jinja2.ext import loopcontrols, with_
 
 from werkzeug import Request, ClosingIterator, peek_path_info, pop_path_info
+from werkzeug.contrib.cache import NullCache, FileSystemCache
 from werkzeug.exceptions import HTTPException, NotFound
 
 from blikit import models, views, template_filters, template_functions
@@ -18,6 +19,7 @@ class Blikit(object):
         self._repo_path = repo_path
         self._odb = models.ObjectDatabase(repo_path)
         self._init_jinja_env()
+        self._init_cache()
 
         if site_name is None:
             site_name = self._odb.name
@@ -48,6 +50,23 @@ class Blikit(object):
             jinja_env.globals[name] = getattr(template_functions, name)
 
         self._jinja_env = jinja_env
+
+    def _init_cache(self):
+        default_timeout = 86400
+
+        cache_dir = os.path.join(self._odb.controldir, 'blikit-cache')
+        if os.path.isdir(cache_dir):
+            if os.access(cache_dir, os.R_OK|os.W_OK|os.X_OK):
+                self.cache = FileSystemCache(cache_dir, default_timeout=default_timeout)
+            else:
+                self.cache = NullCache()
+
+        elif os.access(self._repo_path, os.W_OK):
+            os.mkdir(cache_dir)
+            self.cache = FileSystemCache(cache_dir, default_timeout=default_timeout)
+
+        else:
+            self.cache = NullCache()
 
 
     def __call__(self, environ, start_response):
