@@ -27,6 +27,9 @@ READMES = [
     'README',
     'README.txt',
     'README.rst',
+    '.README',
+    '.README.txt',
+    '.README.rst',
 ]
 
 def find_readme(tree_obj):
