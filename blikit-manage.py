@@ -2,6 +2,8 @@
 import os
 import sys
 
+import blikit
+
 from blikit.application import Blikit, is_git_repo
 from werkzeug import script
 from werkzeug.contrib import profiler
@@ -13,7 +15,7 @@ if not is_git_repo('.'):
 def make_app():
     return Blikit('.')
 
-static = os.path.join(os.path.dirname(__file__), 'blikit', 'static')
+static = os.path.join(os.path.dirname(blikit.__file__), 'static')
 
 action_runserver = script.make_runserver(make_app,
                                          use_reloader=True,
