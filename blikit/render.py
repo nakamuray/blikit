@@ -20,6 +20,10 @@ class Document(object):
     title = None
     description = None
     body = None
+    author_name = None
+    last_modified = None
+    created = None
+
     def __init__(self, **attrs):
         for name, value in attrs.iteritems():
             if name.startswith('_'):
@@ -45,6 +49,13 @@ def render_blob(ctx, blob_obj):
 
     if there is no render function for this object, return None
     '''
+    cache_key = 'render.render_blob:%s:%s' % \
+            (blob_obj.commit.sha, blob_obj.abs_name)
+
+    cached = ctx.app.cache.get(cache_key)
+    if cached is not None:
+        return cached
+
     if not isinstance(blob_obj, BlobObject):
         # TODO: raise proper exception
         # XXX: may this function treat TreeObject?
@@ -56,6 +67,18 @@ def render_blob(ctx, blob_obj):
             break
     else:
         result = None
+
+    if isinstance(result, Document):
+        if result.author_name is None:
+            result.author_name = blob_obj.author_name
+
+        if result.last_modified is None:
+            result.last_modified = blob_obj.last_modified
+
+        if result.created is None:
+            result.created = blob_obj.created
+
+    ctx.app.cache.set(cache_key, result)
 
     return result
 
