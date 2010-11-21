@@ -121,3 +121,7 @@ table.docutils td {
     font-size: 80%;
     text-align: right;
 }
+
+.document table.highlighttable pre {
+    line-height: 125%;
+}
