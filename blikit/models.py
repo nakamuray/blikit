@@ -446,6 +446,24 @@ class ObjectDatabase(object):
 
         self._repo = repo
 
+    def __contains__(self, key):
+        return self._repo.__contains__(key)
+
+    def __getitem__(self, key):
+        if key not in self._repo:
+            raise KeyError
+
+        raw_obj = self._repo[key]
+
+        # FIXME: how to determin LinkObject?
+        for expected_class, return_class in [(dulwich.objects.Blob, BlobObject),
+                                             (dulwich.objects.Commit, CommitObject),
+                                             (dulwich.objects.Tree, TreeObject)]:
+            if isinstance(raw_obj, expected_class):
+                return return_class(self, raw_obj)
+
+        raise ObjectTypeMismatch('unknown object: %s' % repr(raw_obj))
+
     def _make_get(expected_class, return_class):
         def _get_object(self, hash):
             obj = self._repo.get_object(hash)

@@ -28,6 +28,9 @@ def view_obj(ctx, rev, path):
     #      URL にも普通にマッチしてしまうので、今度は tree view の方に行けない。
     #
     #      ということで仕方なくここで判定・ルーティングする。
+    if rev not in ctx.odb:
+        raise NotFound
+
     if path.endswith('/'):
         return tree(ctx, rev, path)
     else:
