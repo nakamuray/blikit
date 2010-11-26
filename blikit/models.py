@@ -164,7 +164,18 @@ class LinkObject(BaseObject):
 
     @property
     def target(self):
-        return self.commit.tree[self._obj.data]
+        # TODO: target is LinkObject
+        target_path = self._obj.data
+        try:
+            if target_path.startswith('/'):
+                # absolute path
+                return self.commit.tree[target_path]
+            else:
+                # relative path
+                return self.parent[target_path]
+
+        except KeyError:
+            return None
 
 
 class TreeObject(BaseObject):
