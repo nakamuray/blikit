@@ -164,7 +164,7 @@ class LinkObject(BaseObject):
 
     @property
     def target(self):
-        return self.data
+        return self.commit.tree[self._obj.data]
 
 
 class TreeObject(BaseObject):
