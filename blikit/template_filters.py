@@ -2,10 +2,11 @@ from jinja2 import contextfilter
 from werkzeug import escape, url_quote, url_quote_plus
 
 from blikit import utils
-from blikit.models import BlobObject, TreeObject
+from blikit.models import BlobObject, TreeObject, LinkObject
 from blikit.render import render_blob
 
-__all__ = ['escape_u', 'document', 'description', 'title', 'dateformat']
+__all__ = ['escape_u', 'document', 'description', 'title', 'dateformat',
+           'is_tree']
 
 def escape_u(url):
     return escape(url_quote_plus(url))
@@ -53,3 +54,6 @@ def title(context, obj):
 
 def dateformat(datetime, fmt='%Y-%m-%d %H:%M'):
     return datetime.strftime(fmt)
+
+def is_tree(obj):
+    return isinstance(obj, TreeObject)

@@ -168,8 +168,6 @@ class LinkObject(BaseObject):
 
 
 class TreeObject(BaseObject):
-    is_tree = True
-
     @property
     def root_path(self):
         if self.parent is None:
