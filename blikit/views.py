@@ -55,7 +55,6 @@ def tree(ctx, rev, path):
         raise NotFound('No such file or directory')
 
     if not isinstance(tree_obj, TreeObject):
-        # TODO: follow symlink
         raise NotFound('No such file or directory')
 
     readme_obj = utils.find_readme(tree_obj)
@@ -91,7 +90,6 @@ def blob(ctx, rev, path):
         # redirect to same URL with trailing "/"
         return redirect(ctx.url_for('tree', rev=rev, path=path))
     elif isinstance(blob_obj, LinkObject):
-        # TODO: follow symlink
         raise NotFound('No such file or directory')
 
     if 'raw' in ctx.request.args:
