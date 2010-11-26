@@ -6,7 +6,7 @@ from blikit.models import BlobObject, TreeObject, LinkObject
 from blikit.render import render_blob
 
 __all__ = ['escape_u', 'document', 'description', 'title', 'dateformat',
-           'is_tree']
+           'is_tree', 'is_link']
 
 def escape_u(url):
     return escape(url_quote_plus(url))
@@ -57,3 +57,6 @@ def dateformat(datetime, fmt='%Y-%m-%d %H:%M'):
 
 def is_tree(obj):
     return isinstance(obj, TreeObject)
+
+def is_link(obj):
+    return isinstance(obj, LinkObject)

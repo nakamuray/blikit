@@ -27,16 +27,19 @@
         {%- for name, obj in tree.iteritems() %}
         {%- if name.startswith('.') %}{% continue %}{% endif %}
         <tr class="{{ row_class.next() }}">
+            {%- if obj|is_link %}
+            {%- set obj = obj.target %}
+            {%- endif %}
             {%- if obj|is_tree %}
-            <td class="name"><a class="dir" href="{{ name+'/'|e }}">{{ name+'/'|e }}</a></td>
+            <td class="name"><a class="dir" href="{{ context.url_for('view_obj', rev=obj.commit.name, path=obj.root_path) }}">{{ name+'/'|e }}</a></td>
             <td class="mtime">{{ obj.last_modified|dateformat }}</td>
             <td class="size">&nbsp;</td> {#- directory has no size #}
             <td>{{ obj|description|default("", true)|e }}</td>
             {%- else %}
             {%- set doc = obj|document %}
-            <td class="name"><a class="file" href="{{ name|e }}">{{ name|e }}</a></td>
+            <td class="name"><a class="file" href="{{ context.url_for('view_obj', rev=obj.commit.name, path=obj.root_path) }}">{{ name|e }}</a></td>
             <td class="mtime">{{ doc.last_modified|dateformat }}</td>
-            <td class="size">{{ obj.size|filesizeformat }}</td> <!-- TODO: size -->
+            <td class="size">{{ obj.size|filesizeformat }}</td>
             <td class="description">{{ doc.description|default("", true) }}</td>
             {%- endif %}
         </tr>
