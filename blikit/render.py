@@ -100,7 +100,8 @@ def render_text(ctx, blob_obj):
 @register_for('*.rst')
 def render_rst(ctx, blob_obj):
     parts = publish_parts(blob_obj.data, writer=Writer(),
-                          settings_overrides={'ctx': ctx, 'obj': blob_obj})
+                          settings_overrides={'initial_header_level': 2,
+                                              'ctx': ctx, 'obj': blob_obj})
     parts['description'] = parts['title']
     return Document(**parts)
 
