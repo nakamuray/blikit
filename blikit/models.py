@@ -279,7 +279,8 @@ class TreeObject(BaseObject):
             yield root, dirs, files
 
             if topdown:
-                roots.extendleft(dirs)
+                # extendleft reverses the order of elements
+                roots.extendleft(reversed(dirs))
             else:
                 roots.extend(dirs)
 
