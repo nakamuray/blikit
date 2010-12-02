@@ -15,15 +15,11 @@ if not is_git_repo('.'):
 def make_app():
     return Blikit('.')
 
-static = os.path.join(os.path.dirname(blikit.__file__), 'static')
-
-action_runserver = script.make_runserver(make_app,
-                                         static_files={'/static': static})
+action_runserver = script.make_runserver(make_app)
 
 action_develop = script.make_runserver(make_app,
                                        use_reloader=True,
-                                       use_debugger=True,
-                                       static_files={'/static': static})
+                                       use_debugger=True)
 
 action_profile = profiler.make_action(make_app,
                                       stream=open('/tmp/profiler.log', 'w'))

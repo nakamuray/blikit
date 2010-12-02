@@ -5,7 +5,8 @@ import time
 from jinja2 import Environment, FileSystemLoader
 from jinja2.ext import loopcontrols, with_
 
-from werkzeug import Request, ClosingIterator, peek_path_info, pop_path_info
+from werkzeug import Request, ClosingIterator, SharedDataMiddleware, \
+        peek_path_info, pop_path_info
 from werkzeug.contrib.cache import NullCache, FileSystemCache
 from werkzeug.exceptions import HTTPException, NotFound
 
@@ -30,6 +31,9 @@ class Blikit(object):
             site_description = self._odb.description
 
         self.site_description = site_description
+
+        static = os.path.join(os.path.dirname(__file__), 'static')
+        self._static_app = SharedDataMiddleware(NotFound(), {'/static': static})
 
     def _init_jinja_env(self):
         template_path_list = [DEFAULT_TEMPLATE_PATH]
@@ -72,6 +76,9 @@ class Blikit(object):
 
 
     def __call__(self, environ, start_response):
+        if peek_path_info(environ) == 'static':
+            return self._static_app(environ, start_response)
+
         context = Context(self, environ, self._odb, self._jinja_env)
         try:
             endpoint, values = context.url_adapter.match()
