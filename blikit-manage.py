@@ -18,9 +18,12 @@ def make_app():
 static = os.path.join(os.path.dirname(blikit.__file__), 'static')
 
 action_runserver = script.make_runserver(make_app,
-                                         use_reloader=True,
-                                         use_debugger=True,
                                          static_files={'/static': static})
+
+action_develop = script.make_runserver(make_app,
+                                       use_reloader=True,
+                                       use_debugger=True,
+                                       static_files={'/static': static})
 
 action_profile = profiler.make_action(make_app,
                                       stream=open('/tmp/profiler.log', 'w'))
