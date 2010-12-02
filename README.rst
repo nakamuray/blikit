@@ -3,6 +3,8 @@ blikit is web based git repository browser, document viewer or something like it
 requirements
 ============
 
+- python
+- git
 - Jinja2
 - PIL
 - Pygments
