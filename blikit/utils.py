@@ -50,7 +50,7 @@ def recent_files(ctx, count=None, path=None, pattern=None, show_hidden=False):
 
     return [(datetime.datetime when file created, root_path)]
     '''
-    cache_key = 'uils.recent_documents:%s:%s:%s:%s' % \
+    cache_key = 'utils.recent_files:%s:%s:%s:%s' % \
             (ctx.odb.head.sha, repr(path), repr(pattern), show_hidden)
     cached = ctx.app.cache.get(cache_key)
     if cached is not None:
