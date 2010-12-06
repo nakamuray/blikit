@@ -517,10 +517,13 @@ class ObjectDatabase(object):
 
     @property
     def index(self):
-        if self._repo.has_index():
+        if self._repo.has_index() and self.is_writable():
             return IndexObject(self, self._repo.open_index())
         else:
             return None
+
+    def is_writable(self):
+        return os.access(self._repo.object_store.path, os.R_OK|os.W_OK|os.X_OK)
 
     @property
     def object_store(self):
