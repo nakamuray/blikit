@@ -14,6 +14,14 @@
             <h2>{{ context.app.site_description|e }}</h2>
         </div>
         <div class="sidebar">
+            {%- if context.app.static_links %}
+            <h1>links</h1>
+            <ul>
+                {%- for name, link in context.app.static_links %}
+                <li><a href="{{ link }}">{{ name|e }}</a></li>
+                {%- endfor %}
+            </ul>
+            {%- endif %}
             <h1>recent documents</h1>
             {%- for group in recent_files()|groupby('date')|reverse %}
             <h2>{{ group.grouper }}</h2>

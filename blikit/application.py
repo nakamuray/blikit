@@ -16,7 +16,20 @@ from blikit.context import Context
 DEFAULT_TEMPLATE_PATH = os.path.join(os.path.dirname(__file__), 'templates')
 
 class Blikit(object):
-    def __init__(self, repo_path, site_name=None, site_description=None):
+    '''Blikit WSGI application
+    '''
+    def __init__(self, repo_path,
+                 site_name=None, site_description=None, static_links=None):
+        '''
+        repo_pash: path to git repository
+        site_name: name of this site,
+                   use repository directory name if not passed
+        site_description: description of this site,
+                          use contents of "description" file in git repository
+                          if not passed
+        static_links: [('name of link', 'URL')],
+                      static links displayed at sidebar
+        '''
         self._repo_path = repo_path
         self._odb = models.ObjectDatabase(repo_path)
         self._init_jinja_env()
@@ -31,6 +44,11 @@ class Blikit(object):
             site_description = self._odb.description
 
         self.site_description = site_description
+
+        if static_links is None:
+            static_links = []
+
+        self.static_links = static_links
 
         static = os.path.join(os.path.dirname(__file__), 'static')
         self._static_app = SharedDataMiddleware(NotFound(), {'/static': static})
