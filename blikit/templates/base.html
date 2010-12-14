@@ -1,6 +1,6 @@
 <html>
     <head>
-        <title>{% block title %}{{ title }}{% endblock %}</title>
+        <title>{% block title %}{{ context.app.site_name }}{% endblock %}</title>
         {#- use variable something like STATIC #}
         <link rel="stylesheet" href="{{ request.script_root }}/static/style.css" type="text/css">
         <link rel="stylesheet" href="{{ request.script_root }}/static/style-doc.css" type="text/css">
