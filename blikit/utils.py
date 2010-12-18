@@ -126,7 +126,7 @@ def recent_files(ctx, count=None, path=None, pattern=None, show_hidden=False):
             if isinstance(obj, BlobObject) and \
                (show_hidden or '/.' not in obj.abs_name) and \
                obj.abs_name not in added_names and \
-               fnmatch.fnmatch(obj.name, pattern) and \
+               (pattern is None or fnmatch.fnmatch(obj.name, pattern)) and \
                obj.abs_name in odb.head.tree:
                 added_names.add(obj.abs_name)
                 bisect.insort_right(results,
