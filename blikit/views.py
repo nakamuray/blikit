@@ -120,7 +120,10 @@ def atom(ctx):
                     url=ctx.url_for('root'),
                     subtitle=ctx.odb.description)
 
-    for added_date, root_path in utils.recent_files(ctx, count=10):
+    pattern = ctx.app.recent_doc_pattern
+
+    for added_date, root_path in utils.recent_files(ctx, count=10,
+                                                    pattern=pattern):
         blob_obj = ctx.odb.head.tree[root_path]
         assert isinstance(blob_obj, BlobObject)
 

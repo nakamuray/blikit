@@ -19,7 +19,8 @@ class Blikit(object):
     '''Blikit WSGI application
     '''
     def __init__(self, repo_path,
-                 site_name=None, site_description=None, static_links=None):
+                 site_name=None, site_description=None, static_links=None,
+                 recent_doc_pattern=None):
         '''
         repo_pash: path to git repository
         site_name: name of this site,
@@ -29,6 +30,8 @@ class Blikit(object):
                           if not passed
         static_links: [('name of link', 'URL')],
                       static links displayed at sidebar
+        recent_doc_pattern: only files match this pattern are displayed in
+                            sidebar and atom
         '''
         self._repo_path = repo_path
         self._odb = models.ObjectDatabase(repo_path)
@@ -49,6 +52,8 @@ class Blikit(object):
             static_links = []
 
         self.static_links = static_links
+
+        self.recent_doc_pattern = recent_doc_pattern
 
         static = os.path.join(os.path.dirname(__file__), 'static')
         self._static_app = SharedDataMiddleware(NotFound(), {'/static': static})

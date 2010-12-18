@@ -1,4 +1,5 @@
 import bisect
+import fnmatch
 import Image
 
 from cStringIO import StringIO
@@ -121,11 +122,11 @@ def recent_files(ctx, count=None, path=None, pattern=None, show_hidden=False):
                     added_in_this_commit.append(obj)
 
         for obj in added_in_this_commit:
-            # TODO: use pattern
             # to hide dot directories find "/." in obj.abs_name
             if isinstance(obj, BlobObject) and \
                (show_hidden or '/.' not in obj.abs_name) and \
                obj.abs_name not in added_names and \
+               fnmatch.fnmatch(obj.name, pattern) and \
                obj.abs_name in odb.head.tree:
                 added_names.add(obj.abs_name)
                 bisect.insort_right(results,
