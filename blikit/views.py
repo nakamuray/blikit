@@ -88,7 +88,7 @@ def blob(ctx, rev, path):
 
     if isinstance(blob_obj, TreeObject):
         # redirect to same URL with trailing "/"
-        return redirect(ctx.url_for('tree', rev=rev, path=path))
+        return redirect(ctx.url_for('view_obj', rev=rev, path=path+'/'))
     elif isinstance(blob_obj, LinkObject):
         raise NotFound('No such file or directory')
 
