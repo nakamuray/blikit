@@ -102,16 +102,16 @@ def blob(ctx, rev, path):
                 content_type = 'text/plain'
 
         # TODO: use encoding
-        responce = Response(blob_obj.data,
+        response = Response(blob_obj.data,
                             content_type=content_type)
     else:
         doc = render_blob(ctx, blob_obj)
 
-        responce = ctx.render_to_response('blob.html',
+        response = ctx.render_to_response('blob.html',
                                           doc=doc, blob=blob_obj,
                                           commit=commit_obj)
 
-    return responce
+    return response
 
 @urlmap.map_to('/atom')
 def atom(ctx):
