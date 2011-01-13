@@ -155,7 +155,12 @@ class ShowContents(Directive):
                 result.append(nodes.raw('', html, format='html'))
 
                 if max_count is not None and count >= max_count:
+                    # break inner loop
                     break
+
+            if max_count is not None and count >= max_count:
+                # break outer loop
+                break
 
             if not is_recursive:
                 break
