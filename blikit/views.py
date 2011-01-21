@@ -104,6 +104,7 @@ def blob(ctx, rev, path):
         # TODO: use encoding
         response = Response(blob_obj.data,
                             content_type=content_type)
+        response.headers['X-Robots-Tag'] = 'noindex'
     else:
         doc = render_blob(ctx, blob_obj)
 
