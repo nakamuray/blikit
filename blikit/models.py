@@ -455,6 +455,7 @@ class ObjectDatabase(object):
             repo = dulwich.repo.Repo(repo)
 
         self._repo = repo
+        self._cache = Cache()
 
     def __contains__(self, key):
         return self._repo.__contains__(key)
@@ -463,7 +464,10 @@ class ObjectDatabase(object):
         if key not in self._repo:
             raise KeyError
 
-        raw_obj = self._repo[key]
+        raw_obj = self._cache.get(key)
+        if obj is None:
+            raw_obj = self._repo[key]
+            self._cache.set(key, raw_obj)
 
         # FIXME: how to determin LinkObject?
         for expected_class, return_class in [(dulwich.objects.Blob, BlobObject),
@@ -476,7 +480,10 @@ class ObjectDatabase(object):
 
     def _make_get(expected_class, return_class):
         def _get_object(self, hash):
-            obj = self._repo.get_object(hash)
+            obj = self._cache.get(hash)
+            if obj is None:
+                obj = self._repo.get_object(hash)
+                self._cache.set(hash, obj)
 
             if not isinstance(obj, expected_class):
                 raise ObjectTypeMismatch('%s object expected, not %s' %
@@ -560,3 +567,35 @@ class ObjectDatabase(object):
         except GeneratorExit:
             p.stdout.close()
             p.wait()
+
+class Cache(object):
+    def __init__(self, maxlen=1000):
+        self._maxlen = maxlen
+        self._cache = {}
+
+    def set(self, key, value):
+        self._set(key, value)
+
+        if len(self._cache) > self._maxlen:
+            self._prune()
+
+    def get(self, key):
+        try:
+            _, value = self._cache[key]
+            # update timestamp
+            self._set(key, value)
+            return value
+
+        except KeyError:
+            return None
+
+    def _set(self, key, value):
+        self._cache[key] = (time.time(), value)
+
+    def _prune(self):
+        L = [(t, k) for k, (t, _) in self._cache.items()]
+        L.sort()
+
+        # remove old maxlen/2 items
+        for _, k in L[:self._maxlen/2]:
+            del self._cache[k]
