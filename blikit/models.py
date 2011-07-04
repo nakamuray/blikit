@@ -10,6 +10,7 @@ import stat
 import time
 
 from subprocess import Popen, PIPE
+from threading import Lock
 
 
 class BaseObject(object):
@@ -572,12 +573,11 @@ class Cache(object):
     def __init__(self, maxlen=1000):
         self._maxlen = maxlen
         self._cache = {}
+        self._lock = Lock()
 
     def set(self, key, value):
         self._set(key, value)
-
-        if len(self._cache) > self._maxlen:
-            self._prune()
+        self._prune()
 
     def get(self, key):
         try:
@@ -593,9 +593,11 @@ class Cache(object):
         self._cache[key] = (time.time(), value)
 
     def _prune(self):
-        L = [(t, k) for k, (t, _) in self._cache.items()]
-        L.sort()
+        with self._lock:
+            if len(self._cache) > self._maxlen:
+                L = [(t, k) for k, (t, _) in self._cache.items()]
+                L.sort()
 
-        # remove old maxlen/2 items
-        for _, k in L[:self._maxlen/2]:
-            del self._cache[k]
+                # remove old maxlen/2 items
+                for _, k in L[:self._maxlen/2]:
+                    del self._cache[k]
