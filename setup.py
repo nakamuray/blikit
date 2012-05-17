@@ -11,14 +11,14 @@ for scheme in INSTALL_SCHEMES.values():
 
 setup(
     name = 'blikit',
-    version = '0.1',
+    version = '0.2',
     packages = ['blikit'],
     install_requires = [
         'Jinja2',
         'PIL',
         'Pygments',
         'Werkzeug',
-        'docutils',
+        'docutils >= 0.9',
         'dulwich',
     ],
     scripts = ['blikit-manage.py'],
