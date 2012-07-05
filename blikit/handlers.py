@@ -3,7 +3,7 @@
 import mimetypes
 import os
 
-from tornado.web import RequestHandler, HTTPError
+from cyclone.web import RequestHandler, HTTPError
 from werkzeug.contrib.atom import AtomFeed
 
 from blikit import utils
@@ -38,7 +38,7 @@ class BaseHandler(RequestHandler):
         self.finish(html)
 
     def reverse_url(self, *args, **kwargs):
-        # XXX: Tornado escape all args using tornado.escape.url_escape, which
+        # XXX: Tornado escape all args using cyclone.escape.url_escape, which
         #      escape "/" to "%2F".
         #      I don't intend that.
         url = super(BaseHandler, self).reverse_url(*args, **kwargs)

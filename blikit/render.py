@@ -11,7 +11,7 @@ from pygments import highlight
 from pygments.formatters import HtmlFormatter
 from pygments.lexers import LEXERS, guess_lexer_for_filename, TextLexer
 
-from tornado.escape import xhtml_escape
+from cyclone.escape import xhtml_escape
 
 from blikit import utils
 from blikit.models import BlobObject

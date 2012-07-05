@@ -5,7 +5,7 @@ import time
 from jinja2 import Environment, FileSystemLoader
 from jinja2.ext import loopcontrols, with_
 
-from tornado import web
+from cyclone import web
 from werkzeug.contrib.cache import NullCache, FileSystemCache
 
 from blikit import models, handlers, template_filters, template_functions
@@ -40,7 +40,7 @@ class Blikit(web.Application):
                 name = handler.__name__
             return web.url(url_prefix + pattern, handler, name=name)
 
-        super(Blikit, self).__init__([
+        web.Application.__init__(self, [
             url(r'/', handlers.RootHandler),
             url(r'/([0-9a-f]+|index|HEAD)/', handlers.TreeHandler, name='RootTreeHandler'),
             url(r'/([0-9a-f]+|index|HEAD)/(.*/)', handlers.TreeHandler),
