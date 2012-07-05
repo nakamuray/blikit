@@ -1,24 +1,24 @@
 <html>
     <head>
-        <title>{% block title %}{{ context.app.site_name }}{% endblock %}</title>
+        <title>{% block title %}{{ handler.application.site_name }}{% endblock %}</title>
         {#- use variable something like STATIC #}
-        <link rel="stylesheet" href="{{ request.script_root }}/static/style.css" type="text/css">
-        <link rel="stylesheet" href="{{ request.script_root }}/static/style-doc.css" type="text/css">
-        <link rel="stylesheet" href="{{ request.script_root }}/static/style-dir.css" type="text/css">
-        <link rel="stylesheet" href="{{ request.script_root }}/static/pygments.css" type="text/css">
-        <link href="{{ context.url_for('atom') }}" type="application/atom+xml" rel="alternate">
+        <link rel="stylesheet" href="{{ handler.application.url_prefix }}/static/style.css" type="text/css">
+        <link rel="stylesheet" href="{{ handler.application.url_prefix }}/static/style-doc.css" type="text/css">
+        <link rel="stylesheet" href="{{ handler.application.url_prefix }}/static/style-dir.css" type="text/css">
+        <link rel="stylesheet" href="{{ handler.application.url_prefix }}/static/pygments.css" type="text/css">
+        <link href="{{ handler.reverse_url('AtomHandler') }}" type="application/atom+xml" rel="alternate">
         {%- block head %}{% endblock %}
     </head>
     <body>
         <div class="header">
-            <h1><a href="{{ context.url_for('root') }}">{{ context.app.site_name|e }}</a></h1>
-            <h2>{{ context.app.site_description|e }}</h2>
+            <h1><a href="{{ handler.reverse_url('RootHandler') }}">{{ handler.application.site_name|e }}</a></h1>
+            <h2>{{ handler.application.site_description|e }}</h2>
         </div>
         <div class="sidebar">
-            {%- if context.app.static_links %}
+            {%- if handler.application.static_links %}
             <h1>links</h1>
             <ul>
-                {%- for name, link in context.app.static_links %}
+                {%- for name, link in handler.application.static_links %}
                 <li><a href="{{ link }}">{{ name|e }}</a></li>
                 {%- endfor %}
             </ul>
@@ -28,7 +28,7 @@
             <h2>{{ group.grouper }}</h2>
             <ul>
                 {%- for r in group.list %}
-                <li><a href="{{ context.url_for('view_obj', rev='HEAD', path=r.blob.root_path) }}">{{ r.blob|title }}</a></li>
+                <li><a href="{{ handler.reverse_url('BlobHandler', 'HEAD', r.blob.root_path) }}">{{ r.blob|title }}</a></li>
                 {%- endfor %}
             </ul>
             {%- endfor %}

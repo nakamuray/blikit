@@ -11,6 +11,7 @@ requirements
 - Werkzeug
 - docutils
 - dulwich
+- tornado
 
 
 install

@@ -2,7 +2,6 @@
 
 import fnmatch
 import os
-import werkzeug
 
 from docutils import nodes
 from docutils.core import publish_parts
@@ -11,6 +10,8 @@ from docutils.parsers.rst import Directive, directives
 from pygments import highlight
 from pygments.formatters import HtmlFormatter
 from pygments.lexers import LEXERS, guess_lexer_for_filename, TextLexer
+
+from tornado.escape import xhtml_escape
 
 from blikit import utils
 from blikit.models import BlobObject
@@ -42,7 +43,7 @@ def register_for(*pats):
     return _register_for
 
 
-def render_blob(ctx, blob_obj):
+def render_blob(handler, blob_obj):
     u'''render BlobObject as HTML portion using proper render function
 
     return <Document object>
@@ -58,7 +59,7 @@ def render_blob(ctx, blob_obj):
         cache_key = 'render.render_blob:%s:%s' % \
                 (blob_obj.commit.sha, blob_obj.abs_name)
 
-        cached = ctx.app.cache.get(cache_key)
+        cached = handler.application.cache.get(cache_key)
         if cached is not None:
             return cached
 
@@ -69,7 +70,7 @@ def render_blob(ctx, blob_obj):
 
     for p, func in renderer_map:
         if fnmatch.fnmatch(blob_obj.name, p):
-            result = func(ctx, blob_obj)
+            result = func(handler, blob_obj)
             break
     else:
         result = None
@@ -85,32 +86,32 @@ def render_blob(ctx, blob_obj):
             result.created = blob_obj.created
 
     if blob_obj.commit.sha is not None:
-        ctx.app.cache.set(cache_key, result)
+        handler.application.cache.set(cache_key, result)
 
     return result
 
 
 @register_for('*.txt')
-def render_text(ctx, blob_obj):
+def render_text(handler, blob_obj):
     udata = blob_obj.data.decode('utf-8', 'replace')
     return Document(title=blob_obj.name,
-                    body=u'<pre>' + werkzeug.escape(udata) + u'</pre>')
+                    body=u'<pre>' + xhtml_escape(udata) + u'</pre>')
 
 
 @register_for('*.rst')
-def render_rst(ctx, blob_obj):
+def render_rst(handler, blob_obj):
     parts = publish_parts(blob_obj.data, writer=Writer(),
                           settings_overrides={'initial_header_level': 2,
-                                              'ctx': ctx, 'obj': blob_obj})
+                                              'handler': handler, 'obj': blob_obj})
     parts['description'] = parts['title']
     return Document(**parts)
 
 
 @register_for('*.png', '*.jpg', '*.jpeg', '*.gif')
-def render_images(ctx, blob_obj):
+def render_images(handler, blob_obj):
     w, h = utils.calc_thumb_size(blob_obj.data, (640, 480))
-    url = ctx.url_for('view_obj',
-                      rev=blob_obj.commit.name, path=blob_obj.root_path)
+    url = handler.reverse_url('BlobHandler',
+                              blob_obj.commit.name, blob_obj.root_path)
     raw_url = url + '?raw=1'
     body = '<a href="%s"><img src="%s" width="%d" height="%s"></a>' % \
                (raw_url, raw_url, w, h)
@@ -120,7 +121,7 @@ def render_images(ctx, blob_obj):
 formatter = HtmlFormatter(noclasses=True, linenos=True)
 
 @register_for(*[p for l in LEXERS.values() for p in l[3]])
-def render_sourcecode(ctx, blob_obj):
+def render_sourcecode(handler, blob_obj):
     try:
         data = blob_obj.data.decode('utf-8')
 
@@ -139,15 +140,15 @@ def render_sourcecode(ctx, blob_obj):
 
 
 @register_for('*')
-def render_default(ctx, blob_obj):
+def render_default(handler, blob_obj):
     if '\x00' in blob_obj.data:
         # maybe binary file
         # display download link
-        escaped = werkzeug.escape(blob_obj.name)
+        escaped = xhtml_escape(blob_obj.name)
         body = '<a href="%s?raw=1">download "%s"</a>' % (escaped, escaped)
         return Document(title=blob_obj.name, body=body)
 
     else:
         # maybe some text file
         # render like *.txt
-        return render_text(ctx, blob_obj)
+        return render_text(handler, blob_obj)

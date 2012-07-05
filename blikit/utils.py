@@ -46,14 +46,14 @@ def find_readme(tree_obj):
 
     return None
 
-def recent_files(ctx, count=None, path=None, pattern=None, show_hidden=False):
+def recent_files(handler, count=None, path=None, pattern=None, show_hidden=False):
     '''search recently added files
 
     return [(datetime.datetime when file created, root_path)]
     '''
     cache_key = 'utils.recent_files:%s:%s:%s:%s' % \
-            (ctx.odb.head.sha, repr(path), repr(pattern), show_hidden)
-    cached = ctx.app.cache.get(cache_key)
+            (handler.odb.head.sha, repr(path), repr(pattern), show_hidden)
+    cached = handler.application.cache.get(cache_key)
     if cached is not None:
         cached_count, cached_result = cached
         if cached_count == count:
@@ -62,7 +62,7 @@ def recent_files(ctx, count=None, path=None, pattern=None, show_hidden=False):
         elif cached_count > count:
             return cached_result[:count]
 
-    odb = ctx.odb
+    odb = handler.odb
     args = ['--date-order']
 
     if path is None:
@@ -140,6 +140,6 @@ def recent_files(ctx, count=None, path=None, pattern=None, show_hidden=False):
     results.reverse()
 
     if cached is None or cached_count < count:
-        ctx.app.cache.set(cache_key, (count, results))
+        handler.application.cache.set(cache_key, (count, results))
 
     return results

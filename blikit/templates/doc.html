@@ -10,6 +10,6 @@
         author: {{ blob.author_name }}
       | created: {{ blob.created|dateformat }}
       | modified: {{ blob.last_modified|dateformat }}
-      | <a href="{{ context.url_for('view_obj', rev=commit.name, path=blob.root_path) }}?raw=1">raw</a>
+      | <a href="{{ handler.reverse_url('BlobHandler', commit.name, blob.root_path) }}?raw=1">raw</a>
     </div>
 </div>

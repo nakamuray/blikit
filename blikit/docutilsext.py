@@ -44,23 +44,25 @@ class HTMLTranslator(html4css1.HTMLTranslator):
     def gf_if_relative_link(self, uri):
         if not re.match('^([a-z]+://|/)', uri):
             # it's relative link
-            ctx = self.settings.ctx
+            handler = self.settings.handler
             obj = self.settings.obj
 
-            ref_obj = self.gf(ctx, obj, uri)
+            ref_obj = self.gf(handler, obj, uri)
             if ref_obj is not None:
                 rev = obj.commit.name
                 path = ref_obj.abs_name.strip('/')
 
                 if isinstance(ref_obj, TreeObject):
                     path = path + '/'
+                    return handler.application.reverse_url('TreeHandler', rev, path)
 
-                return ctx.url_for('view_obj', rev=rev, path=path)
+                else:
+                    return handler.application.reverse_url('BlobHandler', rev, path)
 
         return None
 
     @staticmethod
-    def gf(ctx, obj, path):
+    def gf(handler, obj, path):
         '''
         find file in vim like rule
 
@@ -104,7 +106,7 @@ class ShowContents(Directive):
         pattern = self.options.get('pattern', None)
         show_hidden = 'show-hidden' in self.options
 
-        ctx = self.state.document.settings.ctx
+        handler = self.state.document.settings.handler
 
         obj = self.state.document.settings.obj
         if isinstance(obj, TreeObject):
@@ -149,9 +151,9 @@ class ShowContents(Directive):
                     continue
 
                 count += 1
-                doc = blikit.render.render_blob(ctx, f)
-                html = ctx.render_template('innerdoc.html', doc=doc, blob=f,
-                                           commit=f.commit, context=ctx)
+                doc = blikit.render.render_blob(handler, f)
+                html = handler.render_string('innerdoc.html', doc=doc, blob=f,
+                                             commit=f.commit, handler=handler)
                 result.append(nodes.raw('', html, format='html'))
 
                 if max_count is not None and count >= max_count:

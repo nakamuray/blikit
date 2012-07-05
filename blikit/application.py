@@ -5,22 +5,19 @@ import time
 from jinja2 import Environment, FileSystemLoader
 from jinja2.ext import loopcontrols, with_
 
-from werkzeug import Request, ClosingIterator, SharedDataMiddleware, \
-        peek_path_info, pop_path_info
+from tornado import web
 from werkzeug.contrib.cache import NullCache, FileSystemCache
-from werkzeug.exceptions import HTTPException, NotFound
 
-from blikit import models, views, template_filters, template_functions
-from blikit.context import Context
+from blikit import models, handlers, template_filters, template_functions
 
 DEFAULT_TEMPLATE_PATH = os.path.join(os.path.dirname(__file__), 'templates')
 
-class Blikit(object):
-    '''Blikit WSGI application
+class Blikit(web.Application):
+    '''Blikit application
     '''
     def __init__(self, repo_path,
                  site_name=None, site_description=None, static_links=None,
-                 recent_doc_pattern=None):
+                 recent_doc_pattern=None, url_prefix='', **settings):
         '''
         repo_pash: path to git repository
         site_name: name of this site,
@@ -32,19 +29,37 @@ class Blikit(object):
                       static links displayed at sidebar
         recent_doc_pattern: only files match this pattern are displayed in
                             sidebar and atom
+        url_prefix: prefix of URL
+        **settings: others are stored in settings dictionary
         '''
+        if not 'static_path' in settings:
+            settings['static_path'] = os.path.join(os.path.dirname(__file__), 'static')
+
+        def url(pattern, handler, name=None):
+            if name is None:
+                name = handler.__name__
+            return web.url(url_prefix + pattern, handler, name=name)
+
+        super(Blikit, self).__init__([
+            url(r'/', handlers.RootHandler),
+            url(r'/([0-9a-f]+|index|HEAD)/', handlers.TreeHandler, name='RootTreeHandler'),
+            url(r'/([0-9a-f]+|index|HEAD)/(.*/)', handlers.TreeHandler),
+            url(r'/([0-9a-f]+|index|HEAD)/(.*)', handlers.BlobHandler),
+            url(r'/atom', handlers.AtomHandler),
+        ], **settings)
+
         self._repo_path = repo_path
-        self._odb = models.ObjectDatabase(repo_path)
+        self.odb = models.ObjectDatabase(repo_path)
         self._init_jinja_env()
         self._init_cache()
 
         if site_name is None:
-            site_name = self._odb.name
+            site_name = self.odb.name
 
         self.site_name = site_name
 
         if site_description is None:
-            site_description = self._odb.description
+            site_description = self.odb.description
 
         self.site_description = site_description
 
@@ -54,9 +69,6 @@ class Blikit(object):
         self.static_links = static_links
 
         self.recent_doc_pattern = recent_doc_pattern
-
-        static = os.path.join(os.path.dirname(__file__), 'static')
-        self._static_app = SharedDataMiddleware(NotFound(), {'/static': static})
 
     def _init_jinja_env(self):
         template_path_list = [DEFAULT_TEMPLATE_PATH]
@@ -76,12 +88,12 @@ class Blikit(object):
         for name in template_functions.__all__:
             jinja_env.globals[name] = getattr(template_functions, name)
 
-        self._jinja_env = jinja_env
+        self.jinja_env = jinja_env
 
     def _init_cache(self):
         default_timeout = 86400
 
-        cache_dir = os.path.join(self._odb.controldir, 'blikit-cache')
+        cache_dir = os.path.join(self.odb.controldir, 'blikit-cache')
         if os.path.isdir(cache_dir):
             if os.access(cache_dir, os.R_OK|os.W_OK|os.X_OK):
                 self.cache = FileSystemCache(cache_dir,
@@ -96,20 +108,6 @@ class Blikit(object):
 
         else:
             self.cache = NullCache()
-
-
-    def __call__(self, environ, start_response):
-        if peek_path_info(environ) == 'static':
-            return self._static_app(environ, start_response)
-
-        context = Context(self, environ, self._odb, self._jinja_env)
-        try:
-            endpoint, values = context.url_adapter.match()
-            handler = getattr(views, endpoint)
-            response = handler(context, **values)
-        except HTTPException, e:
-            response = e
-        return ClosingIterator(response(environ, start_response), [])
 
 
 def is_git_repo(path):
@@ -133,6 +131,7 @@ def is_git_repo(path):
     return True
 
 
+# FIXME:
 class BlikitDir(object):
     refresh_interval = 60
 

@@ -31,13 +31,13 @@
             {%- set obj = obj.target %}
             {%- endif %}
             {%- if obj|is_tree %}
-            <td class="name"><a class="dir" href="{{ context.url_for('view_obj', rev=obj.commit.name, path=obj.root_path) }}">{{ name+'/'|e }}</a></td>
+            <td class="name"><a class="dir" href="{{ handler.reverse_url('TreeHandler', obj.commit.name, obj.root_path) }}">{{ name+'/'|e }}</a></td>
             <td class="mtime">{{ obj.last_modified|dateformat }}</td>
             <td class="size">&nbsp;</td> {#- directory has no size #}
             <td>{{ obj|description|default("", true)|e }}</td>
             {%- else %}
             {%- set doc = obj|document %}
-            <td class="name"><a class="file" href="{{ context.url_for('view_obj', rev=obj.commit.name, path=obj.root_path) }}">{{ name|e }}</a></td>
+            <td class="name"><a class="file" href="{{ handler.reverse_url('BlobHandler', obj.commit.name, obj.root_path) }}">{{ name|e }}</a></td>
             <td class="mtime">{{ doc.last_modified|dateformat }}</td>
             <td class="size">{{ obj.size|filesizeformat }}</td>
             <td class="description">{{ doc.description|default("", true) }}</td>

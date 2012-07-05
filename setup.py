@@ -11,7 +11,7 @@ for scheme in INSTALL_SCHEMES.values():
 
 setup(
     name = 'blikit',
-    version = '0.2',
+    version = '0.3',
     packages = ['blikit'],
     install_requires = [
         'Jinja2',
@@ -20,6 +20,7 @@ setup(
         'Werkzeug',
         'docutils >= 0.9',
         'dulwich',
+        'tornado',
     ],
     scripts = ['blikit-manage.py'],
     data_files = [('blikit/static', glob.glob('blikit/static/*')),

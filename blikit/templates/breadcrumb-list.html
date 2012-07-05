@@ -1,5 +1,5 @@
-<a class="pathentry first" href="{{ context.url_for("view_obj", rev=commit.name) }}">{{ commit.name|truncate(length=8, killwords=True) }}</a>
+<a class="pathentry first" href="{{ handler.reverse_url("RootTreeHandler", commit.name) }}">{{ commit.name|truncate(length=8, killwords=True) }}</a>
 {%- for pathentry in pathentries(obj) %}
 <span class="pathentry sep">/</span>
-<a class="pathentry" href="{{ context.url_for("view_obj", rev=commit.name, path=pathentry.root_path) }}">{{ pathentry.name|e }}</a>
+<a class="pathentry" href="{{ handler.reverse_url("TreeHandler", commit.name, pathentry.root_path) }}">{{ pathentry.name|e }}</a>
 {%- endfor %}

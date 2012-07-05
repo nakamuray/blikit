@@ -1,33 +1,29 @@
 from jinja2 import contextfilter
-from werkzeug import escape, url_quote, url_quote_plus
 
 from blikit import utils
 from blikit.models import BlobObject, TreeObject, LinkObject
 from blikit.render import render_blob
 
-__all__ = ['escape_u', 'document', 'description', 'title', 'dateformat',
+__all__ = ['document', 'description', 'title', 'dateformat',
            'is_tree', 'is_link']
-
-def escape_u(url):
-    return escape(url_quote_plus(url))
 
 @contextfilter
 def document(context, obj):
-    ctx = context['context']
-    return render_blob(ctx, obj)
+    handler = context['handler']
+    return render_blob(handler, obj)
 
 @contextfilter
 def description(context, obj):
-    ctx = context['context']
+    handler = context['handler']
 
     if isinstance(obj, BlobObject):
-        doc = render_blob(ctx, obj)
+        doc = render_blob(handler, obj)
         return doc.description
 
     elif isinstance(obj, TreeObject):
         readme_obj = utils.find_readme(obj)
         if readme_obj is not None:
-            readme_doc = render_blob(ctx, readme_obj)
+            readme_doc = render_blob(handler, readme_obj)
             return readme_doc.description
 
     else:
@@ -36,16 +32,16 @@ def description(context, obj):
 
 @contextfilter
 def title(context, obj):
-    ctx = context['context']
+    handler = context['handler']
 
     if isinstance(obj, BlobObject):
-        doc = render_blob(ctx, obj)
+        doc = render_blob(handler, obj)
         return doc.title
 
     elif isinstance(obj, TreeObject):
         readme_obj = utils.find_readme(obj)
         if readme_obj is not None:
-            readme_doc = render_blob(ctx, readme_obj)
+            readme_doc = render_blob(handler, readme_obj)
             return readme_doc.title
 
     else:
