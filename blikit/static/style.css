@@ -6,6 +6,10 @@ h1 {
     font-size: 100%;
 }
 
+h1 .title:link, h1 .title:visited {
+    color: black;
+}
+
 a {
     text-decoration: none;
 }

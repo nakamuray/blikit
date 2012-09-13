@@ -94,6 +94,7 @@ class ShowContents(Directive):
         'count': directives.positive_int,
         'pattern': directives.unchanged,
         'show-hidden': directives.flag,
+        'title-only': directives.flag,
     }
 
     def run(self):
@@ -103,6 +104,7 @@ class ShowContents(Directive):
         max_count = self.options.get('count', None)
         pattern = self.options.get('pattern', None)
         show_hidden = 'show-hidden' in self.options
+        title_only = 'title-only' in self.options
 
         ctx = self.state.document.settings.ctx
 
@@ -150,7 +152,13 @@ class ShowContents(Directive):
 
                 count += 1
                 doc = blikit.render.render_blob(ctx, f)
-                html = ctx.render_template('innerdoc.html', doc=doc, blob=f,
+
+                if title_only:
+                    template = 'innertitle.html'
+                else:
+                    template = 'innerdoc.html'
+
+                html = ctx.render_template(template, doc=doc, blob=f,
                                            commit=f.commit, context=ctx)
                 result.append(nodes.raw('', html, format='html'))
 
