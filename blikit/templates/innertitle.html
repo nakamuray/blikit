@@ -2,5 +2,5 @@
     {%- with obj = blob %}
     {%- include "breadcrumb-list.html" %}
     {%- endwith %}
-    <a class="title" href="{{ context.url_for('view_obj', rev=commit.name, path=blob.root_path) }}">{{ doc.title }}</a>
+    <a class="title" href="{{ context.url_for('view_obj', rev=commit.name, path=blob.root_path) }}">{{ doc.title|e }}</a>
 </h1>
