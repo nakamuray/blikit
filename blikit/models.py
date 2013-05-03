@@ -2,7 +2,8 @@
 
 import collections
 import datetime
-import dulwich
+import dulwich.objects
+import dulwich.repo
 import email.utils
 import fnmatch
 import os
