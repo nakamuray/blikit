@@ -15,7 +15,7 @@ setup(
     packages = ['blikit'],
     install_requires = [
         'Jinja2',
-        'PIL',
+        'Pillow',
         'Pygments',
         'Werkzeug',
         'docutils >= 0.9',

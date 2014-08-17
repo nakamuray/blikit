@@ -1,7 +1,7 @@
 import bisect
 import fnmatch
-import Image
 
+from PIL import Image
 from cStringIO import StringIO
 
 from blikit.models import BlobObject, TreeObject, ObjectTypeMismatch
